@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo Questrum — Василий Боскис</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Nunito:wght@400;700;800&display=swap');
+:root{
+  --bg:#0a0e1a;--card:#1a2235;--border:#1e3a5f;
+  --gold:#f5c842;--cyan:#00d4ff;--green:#00ff88;
+  --red:#ff4d6d;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,.35) 0%,transparent 100%),
+  radial-gradient(1px 1px at 75% 12%,rgba(255,255,255,.25) 0%,transparent 100%),
+  radial-gradient(1px 1px at 50% 68%,rgba(255,255,255,.4) 0%,transparent 100%),
+  radial-gradient(1px 1px at 8% 82%,rgba(0,212,255,.3) 0%,transparent 100%),
+  radial-gradient(2px 2px at 68% 48%,rgba(245,200,66,.25) 0%,transparent 100%),
+  radial-gradient(1px 1px at 33% 18%,rgba(255,255,255,.4) 0%,transparent 100%),
+  radial-gradient(1px 1px at 88% 58%,rgba(168,85,247,.35) 0%,transparent 100%);}
+
+/* ── SCREENS ── */
+.screen{position:relative;z-index:1;display:none;min-height:100vh;padding:20px;
+  flex-direction:column;align-items:center;justify-content:center;}
+.screen.active{display:flex;}
+#game-screen{justify-content:flex-start;padding-top:14px;}
+
+/* ── INTRO ── */
+.logo-title{font-family:'Orbitron',monospace;font-size:clamp(2rem,8vw,4.5rem);font-weight:900;
+  background:linear-gradient(135deg,var(--cyan) 0%,var(--gold) 50%,var(--purple) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-align:center;letter-spacing:2px;line-height:1.1;margin-bottom:8px;}
+.logo-sub{font-family:'Orbitron',monospace;font-size:clamp(.7rem,2.5vw,1rem);color:var(--cyan);
+  letter-spacing:6px;text-align:center;margin-bottom:22px;opacity:.7;}
+.player-badge{background:linear-gradient(135deg,#1e3a5f,#0f2744);border:2px solid var(--gold);
+  border-radius:16px;padding:16px 28px;text-align:center;margin-bottom:18px;
+  box-shadow:0 0 28px rgba(245,200,66,.18);}
+.player-badge .lbl{font-size:.75rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.player-badge .nm{font-family:'Orbitron',monospace;font-size:1.5rem;color:var(--gold);font-weight:700;margin-top:4px;}
+.player-badge .rk{font-size:.85rem;color:var(--cyan);margin-top:4px;}
+
+/* voice panel */
+.voice-panel{background:var(--card);border:2px solid var(--border);border-radius:14px;
+  padding:14px 18px;width:100%;max-width:700px;margin-bottom:18px;}
+.vp-title{font-weight:800;font-size:.9rem;color:var(--cyan);margin-bottom:10px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;
+  border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;padding-bottom:0;}
+.tl{font-size:.9rem;} .td{font-size:.72rem;color:var(--muted);margin-top:1px;}
+.tog{position:relative;width:44px;height:24px;background:var(--border);border-radius:12px;
+  cursor:pointer;transition:background .2s;border:none;flex-shrink:0;}
+.tog.on{background:var(--cyan);}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;
+  background:#fff;border-radius:50%;transition:transform .2s;}
+.tog.on::after{transform:translateX(20px);}
+.vp-note{font-size:.72rem;color:var(--muted);margin-top:8px;}
+
+.levels-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;width:100%;max-width:700px;}
+.level-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:18px 14px;
+  text-align:center;cursor:pointer;transition:all .2s;}
+.level-card:hover{transform:translateY(-4px);border-color:var(--cyan);box-shadow:0 8px 28px rgba(0,212,255,.18);}
+.lc-icon{font-size:2.3rem;margin-bottom:7px;display:block;}
+.lc-name{font-weight:800;font-size:.95rem;margin-bottom:3px;}
+.lc-desc{font-size:.72rem;color:var(--muted);}
+.lc-stars{margin-top:7px;font-size:.95rem;}
+
+/* ── GAME ── */
+.game-header{width:100%;max-width:700px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.btn-back{background:var(--card);border:1px solid var(--border);color:var(--text);
+  padding:7px 13px;border-radius:9px;cursor:pointer;font-size:.82rem;font-family:'Nunito',sans-serif;
+  transition:all .2s;white-space:nowrap;}
+.btn-back:hover{border-color:var(--cyan);color:var(--cyan);}
+.game-meta{flex:1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.mpill{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:4px 11px;
+  font-size:.78rem;display:flex;align-items:center;gap:4px;}
+.mpill .v{font-weight:800;color:var(--gold);}
+
+/* speaking indicator — single line, never overlaps */
+.speak-row{width:100%;max-width:700px;height:24px;display:flex;align-items:center;gap:8px;
+  margin-bottom:6px;overflow:hidden;}
+.waves{display:none;align-items:center;gap:3px;height:18px;flex-shrink:0;}
+.waves.on{display:flex;}
+.waves span{display:block;width:3px;background:var(--cyan);border-radius:2px;animation:wv .6s ease-in-out infinite;}
+.waves span:nth-child(1){height:6px;animation-delay:0s;}
+.waves span:nth-child(2){height:14px;animation-delay:.1s;}
+.waves span:nth-child(3){height:18px;animation-delay:.2s;}
+.waves span:nth-child(4){height:14px;animation-delay:.3s;}
+.waves span:nth-child(5){height:6px;animation-delay:.4s;}
+@keyframes wv{0%,100%{transform:scaleY(1);}50%{transform:scaleY(.35);}}
+.speak-txt{font-size:.75rem;color:var(--cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:600px;}
+
+.xp-wrap{width:100%;max-width:700px;margin-bottom:8px;}
+.xp-bg{background:var(--card);border-radius:6px;height:7px;overflow:hidden;border:1px solid var(--border);}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:6px;transition:width .5s;}
+.dots{display:flex;gap:5px;margin-bottom:8px;width:100%;max-width:700px;}
+.dot{flex:1;height:5px;border-radius:3px;background:var(--border);transition:background .3s;}
+.dot.done{background:var(--green);}.dot.cur{background:var(--gold);}.dot.bad{background:var(--red);}
+
+/* quest card — fixed height for setup, no overflow */
+.quest-card{background:var(--card);border:2px solid var(--border);border-radius:18px;
+  padding:18px 20px;width:100%;max-width:700px;margin-bottom:10px;
+  position:relative;overflow:hidden;}
+.quest-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));}
+.qlabel{font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);
+  margin-bottom:6px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.btn-repeat{background:none;border:1px solid var(--cyan);color:var(--cyan);border-radius:5px;
+  padding:2px 9px;font-size:.68rem;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;}
+.btn-repeat:hover{background:rgba(0,212,255,.1);}
+/* setup: exactly 2 lines max, no overflow into prompt */
+.qsetup{font-size:.92rem;color:var(--muted);margin-bottom:8px;line-height:1.4;
+  min-height:2em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.qprompt{font-size:1.2rem;font-weight:800;color:var(--text);line-height:1.45;}
+.blank{display:inline-block;min-width:70px;border-bottom:3px solid var(--gold);
+  color:var(--gold);font-style:italic;vertical-align:bottom;text-align:center;transition:all .3s;}
+.qhint{font-size:.82rem;color:var(--purple);margin-top:7px;opacity:0;transition:opacity .3s;}
+.qhint.vis{opacity:1;}
+
+/* ── MIC ZONE — always visible when stt on ── */
+.mic-zone{width:100%;max-width:700px;margin-bottom:12px;display:none;}
+.mic-zone.show{display:block;}
+.mic-inner{background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(0,212,255,.06));
+  border:2px dashed var(--purple);border-radius:18px;padding:16px 20px;
+  display:flex;align-items:center;gap:16px;}
+
+/* BIG MIC BUTTON */
+.mic-btn{width:80px;height:80px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#2a1545,#160d2e);
+  border:3px solid var(--purple);color:var(--purple);font-size:2.2rem;
+  cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;
+  position:relative;}
+.mic-btn:hover:not(.off){border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 18px rgba(0,212,255,.3);}
+.mic-btn.live{border-color:var(--red);color:#fff;
+  background:radial-gradient(circle,rgba(255,77,109,.35),rgba(255,77,109,.06));
+  animation:mpulse 1s ease-in-out infinite;}
+.mic-btn.off{opacity:.4;cursor:not-allowed;}
+@keyframes mpulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(255,77,109,.2),0 0 0 8px rgba(255,77,109,.08);}
+  50%{box-shadow:0 0 0 10px rgba(255,77,109,.12),0 0 0 18px rgba(255,77,109,.04);}
+}
+.mic-btn.live::before,.mic-btn.live::after{content:'';position:absolute;border-radius:50%;
+  border:2px solid var(--red);animation:rippl 1.4s linear infinite;}
+.mic-btn.live::before{width:100px;height:100px;animation-delay:0s;}
+.mic-btn.live::after{width:120px;height:120px;animation-delay:.55s;}
+@keyframes rippl{0%{opacity:.5;transform:scale(.9);}100%{opacity:0;transform:scale(1.35);}}
+
+.mic-right{flex:1;display:flex;flex-direction:column;gap:8px;}
+.mic-label{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--purple);font-weight:700;}
+.mic-status{font-size:.95rem;font-weight:700;color:var(--text);}
+.mic-status.live{color:var(--red);animation:blink .9s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.45;}}
+.mic-heard{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;
+  padding:8px 13px;font-size:.95rem;font-weight:700;color:var(--cyan);min-height:38px;
+  display:flex;align-items:center;}
+.mic-heard .ph{color:var(--muted);font-weight:400;font-size:.85rem;}
+
+/* ANSWERS */
+.answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%;max-width:700px;margin-bottom:12px;}
+.ans{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:13px 14px;
+  color:var(--text);font-size:.98rem;font-weight:700;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:all .2s;text-align:left;}
+.ans:hover:not(:disabled){border-color:var(--cyan);transform:translateX(3px);background:#1e2d45;}
+.ans.ok{border-color:var(--green);background:rgba(0,255,136,.1);color:var(--green);}
+.ans.no{border-color:var(--red);background:rgba(255,77,109,.1);color:var(--red);}
+.ans.hi{border-color:var(--purple);background:rgba(168,85,247,.18);transform:scale(1.02);}
+.ans:disabled{cursor:default;}
+
+.btn-hint{background:transparent;border:1px dashed var(--purple);color:var(--purple);
+  border-radius:9px;padding:5px 13px;font-size:.78rem;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:all .2s;margin-bottom:10px;width:100%;max-width:700px;}
+.btn-hint:hover{background:rgba(168,85,247,.1);}
+.tbl-hint{background:#0f1e35;border:1px solid var(--border);border-radius:11px;padding:10px 14px;
+  width:100%;max-width:700px;margin-bottom:10px;display:none;font-size:.82rem;}
+.tbl-hint.vis{display:block;}
+.tbl-hint table{width:100%;border-collapse:collapse;}
+.tbl-hint td,.tbl-hint th{padding:4px 9px;text-align:left;border-bottom:1px solid var(--border);}
+.tbl-hint th{color:var(--cyan);font-size:.72rem;letter-spacing:1px;}
+.tbl-hint td:first-child{color:var(--gold);font-weight:700;}
+
+/* FEEDBACK */
+.fb{width:100%;max-width:700px;border-radius:12px;padding:14px 18px;
+  margin-bottom:10px;display:none;animation:sup .3s ease;}
+.fb.show{display:block;}
+.fb.win{background:rgba(0,255,136,.1);border:2px solid var(--green);}
+.fb.lose{background:rgba(255,77,109,.1);border:2px solid var(--red);}
+.fb-title{font-size:1.05rem;font-weight:800;margin-bottom:3px;}
+.fb.win .fb-title{color:var(--green);}.fb.lose .fb-title{color:var(--red);}
+.fb-exp{font-size:.88rem;color:var(--text);line-height:1.5;}
+@keyframes sup{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.btn-next{background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:12px;
+  color:#000;font-weight:800;font-size:.98rem;font-family:'Nunito',sans-serif;padding:13px 32px;
+  cursor:pointer;display:none;margin:0 auto;transition:transform .2s,box-shadow .2s;
+  box-shadow:0 4px 18px rgba(0,212,255,.28);}
+.btn-next.show{display:block;}
+.btn-next:hover{transform:scale(1.05);}
+
+/* RESULTS */
+.results-wrap{text-align:center;max-width:480px;}
+.r-title{font-family:'Orbitron',monospace;font-size:1.9rem;font-weight:900;color:var(--gold);margin-bottom:8px;}
+.r-score{font-size:3.8rem;font-weight:900;
+  background:linear-gradient(135deg,var(--cyan),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:14px 0;}
+.r-stars{font-size:2.3rem;margin-bottom:14px;}
+.r-msg{color:var(--muted);font-size:.95rem;margin-bottom:24px;line-height:1.5;}
+.r-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.btn-p{background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:11px;
+  color:#000;font-weight:800;font-size:.95rem;font-family:'Nunito',sans-serif;padding:11px 26px;cursor:pointer;transition:transform .2s;}
+.btn-p:hover{transform:scale(1.05);}
+.btn-s{background:var(--card);border:2px solid var(--border);color:var(--text);border-radius:11px;
+  font-weight:700;font-size:.95rem;font-family:'Nunito',sans-serif;padding:11px 26px;cursor:pointer;transition:all .2s;}
+.btn-s:hover{border-color:var(--cyan);color:var(--cyan);}
+.mascot{font-size:3.8rem;margin-bottom:10px;display:block;animation:fl 3s ease-in-out infinite;}
+@keyframes fl{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+.part{position:fixed;pointer-events:none;z-index:999;border-radius:50%;animation:fa 1.5s ease-in forwards;}
+@keyframes fa{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(60vh) rotate(360deg);opacity:0;}}
+/* LOGOPED RECORDER */
+.btn-logoped{background:transparent;border:1px solid var(--muted);color:var(--muted);
+  border-radius:9px;padding:6px 16px;font-size:.78rem;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:all .2s;margin-top:14px;}
+.btn-logoped:hover{border-color:var(--purple);color:var(--purple);}
+#recorder-screen{justify-content:flex-start;padding-top:20px;}
+.rec-header{width:100%;max-width:700px;display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.rec-title{font-family:'Orbitron',monospace;font-size:1.1rem;color:var(--purple);font-weight:700;}
+.rec-progress{font-size:.8rem;color:var(--muted);margin-left:auto;}
+.rec-card{background:var(--card);border:2px solid var(--purple);border-radius:18px;
+  padding:22px 20px;width:100%;max-width:700px;margin-bottom:14px;}
+.rec-q-num{font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:8px;font-weight:700;}
+.rec-q-text{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:4px;line-height:1.4;}
+.rec-q-voice{font-size:.85rem;color:var(--muted);font-style:italic;margin-bottom:14px;}
+.rec-q-voice span{color:var(--cyan);}
+.rec-status{text-align:center;margin-bottom:14px;min-height:28px;}
+.rec-status-text{font-size:.9rem;font-weight:700;}
+.rec-status-text.recording{color:var(--red);animation:blink .8s infinite;}
+.rec-status-text.done{color:var(--green);}
+.rec-status-text.idle{color:var(--muted);}
+.rec-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+.rec-btn{border:none;border-radius:12px;padding:12px 22px;font-size:.95rem;font-weight:800;
+  font-family:'Nunito',sans-serif;cursor:pointer;transition:all .2s;}
+.rec-btn.start{background:var(--red);color:#fff;}
+.rec-btn.stop{background:var(--card);border:2px solid var(--red);color:var(--red);}
+.rec-btn.play{background:var(--card);border:2px solid var(--green);color:var(--green);}
+.rec-btn.play:disabled{opacity:.4;cursor:not-allowed;}
+.rec-btn.del{background:var(--card);border:2px solid var(--muted);color:var(--muted);font-size:.8rem;}
+.rec-nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.rec-nav-btn{background:var(--card);border:2px solid var(--border);color:var(--text);
+  border-radius:11px;padding:10px 22px;font-size:.9rem;font-weight:700;
+  font-family:'Nunito',sans-serif;cursor:pointer;transition:all .2s;}
+.rec-nav-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.rec-nav-btn.primary{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border:none;}
+.rec-dots{display:flex;gap:5px;flex-wrap:wrap;width:100%;max-width:700px;margin-bottom:12px;}
+.rec-dot{width:18px;height:18px;border-radius:50%;background:var(--border);
+  cursor:pointer;transition:all .2s;border:2px solid transparent;}
+.rec-dot.has{background:var(--green);}
+.rec-dot.cur{border-color:var(--gold);}
+.rec-note{background:rgba(168,85,247,.08);border:1px solid var(--purple);
+  border-radius:10px;padding:10px 14px;font-size:.8rem;color:var(--muted);
+  width:100%;max-width:700px;line-height:1.6;margin-bottom:12px;}
+
+/* BANK */
+.bank-box{background:linear-gradient(135deg,#1a2235,#0f1a2e);border:2px solid var(--gold);
+  border-radius:18px;padding:18px 20px;margin:16px 0;width:100%;text-align:left;}
+.bank-title{font-family:'Orbitron',monospace;font-size:.9rem;color:var(--gold);
+  font-weight:700;margin-bottom:8px;text-align:center;}
+.bank-total{font-size:1.1rem;font-weight:800;color:var(--text);text-align:center;
+  margin-bottom:14px;}
+.bank-total span{color:var(--gold);font-size:1.4rem;}
+.bank-prizes{display:flex;flex-direction:column;gap:10px;}
+.prize{background:rgba(255,255,255,.04);border-radius:12px;padding:10px 14px;
+  font-size:.85rem;font-weight:700;color:var(--text);line-height:1.6;}
+.prize-need{font-size:.75rem;color:var(--muted);font-weight:400;}
+.prize-bar-bg{background:var(--border);border-radius:6px;height:10px;
+  margin-top:6px;overflow:hidden;}
+.prize-bar{height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--gold),var(--cyan));
+  transition:width 1s ease;width:0%;}
+.prize.done .prize-bar{background:var(--green);}
+.prize.done{border:1px solid var(--green);}
+.bank-hint{font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro-screen" class="screen active">
+  <div class="logo-title">LOGO<br>QUESTRUM</div>
+  <div class="logo-sub">речевые квесты</div>
+  <div class="player-badge">
+    <div class="lbl">игрок</div>
+    <div class="nm">🏆 ВАСИЛИЙ БОСКИС</div>
+    <div class="rk">⚡ Детектив Падежей — Уровень 1</div>
+  </div>
+  <div class="voice-panel">
+    <div class="vp-title">🎙️ Голосовые настройки</div>
+    <div class="toggle-row">
+      <div><div class="tl">🔊 Игра говорит вслух</div><div class="td">Голос читает вопросы и хвалит</div></div>
+      <button class="tog on" id="tts-tog" onclick="toggleTTS()"></button>
+    </div>
+    <div class="toggle-row">
+      <div><div class="tl">🎙️ Отвечать голосом</div><div class="td">Появится большая кнопка микрофона</div></div>
+      <button class="tog" id="stt-tog" onclick="toggleSTT()"></button>
+    </div>
+    <div class="vp-note">💡 Работает в Chrome (телефон или компьютер)</div>
+  </div>
+  <div style="font-size:.88rem;color:var(--muted);margin-bottom:18px;text-align:center;max-width:500px;">
+    Выбери квест и помоги словам найти правильную форму!<br>За каждый верный ответ — кристаллы ✦
+  </div>
+  <div class="levels-grid">
+    <div class="level-card" onclick="startLevel(0)"><span class="lc-icon">🥪</span><div class="lc-name">Бутерброд и Книга</div><div class="lc-desc">Творительный и Предложный</div><div class="lc-stars" id="s0">☆☆☆</div></div>
+    <div class="level-card" onclick="startLevel(1)"><span class="lc-icon">🌲</span><div class="lc-name">Лес и Поляна</div><div class="lc-desc">Предлоги места</div><div class="lc-stars" id="s1">☆☆☆</div></div>
+    <div class="level-card" onclick="startLevel(2)"><span class="lc-icon">🐺</span><div class="lc-name">Кто кого?</div><div class="lc-desc">Субъект и объект</div><div class="lc-stars" id="s2">☆☆☆</div></div>
+    <div class="level-card" onclick="startLevel(3)"><span class="lc-icon">🦔</span><div class="lc-name">Зверята</div><div class="lc-desc">Все падежи — финал!</div><div class="lc-stars" id="s3">☆☆☆</div></div>
+  </div>
+  <div style="margin-top:20px;font-size:.78rem;color:var(--muted);text-align:center;">
+    Общий счёт: <span id="tot" style="color:var(--gold);font-weight:800;">0</span> ✦
+  </div>
+  <button class="btn-logoped" onclick="openRecorder()">🎙️ Режим логопеда</button>
+
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+  <div class="game-header">
+    <button class="btn-back" onclick="goHome()">← Домой</button>
+    <div class="game-meta">
+      <div class="mpill"><span class="v" id="lvl-nm">—</span></div>
+      <div class="mpill">✦ <span class="v" id="sc">0</span></div>
+      <div class="mpill">❤️ <span class="v" id="lv">3</span></div>
+    </div>
+  </div>
+
+  <!-- speaking row: fixed height, no overlap -->
+  <div class="speak-row">
+    <div class="waves" id="waves"><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="speak-txt" id="speak-txt"></div>
+  </div>
+
+  <div class="xp-wrap"><div class="xp-bg"><div class="xp-fill" id="xp" style="width:0%"></div></div></div>
+  <div class="dots" id="dots"></div>
+
+  <div class="quest-card">
+    <div class="qlabel">
+      <span id="qlbl">Задание 1 из 8</span>
+      <button class="btn-repeat" onclick="repeatQ()">🔊 Повторить</button>
+    </div>
+    <div class="qsetup" id="qsetup"></div>
+    <div class="qprompt" id="qprompt"></div>
+    <div class="qhint" id="qhint"></div>
+  </div>
+
+  <button class="btn-hint" id="hbtn" onclick="showHint()">💡 Подсказка — задай вопрос!</button>
+  <div class="tbl-hint" id="tbl">
+    <table>
+      <tr><th>Падеж</th><th>Вопрос</th><th>Предлоги</th></tr>
+      <tr><td>Р.п.</td><td>кого? чего?</td><td>у, для, без, из, с</td></tr>
+      <tr><td>Д.п.</td><td>кому? чему?</td><td>к, по</td></tr>
+      <tr><td>В.п.</td><td>кого? что?</td><td>в, на, за, под, про</td></tr>
+      <tr><td>Т.п.</td><td>кем? чем?</td><td>с, за, над, под, перед</td></tr>
+      <tr><td>П.п.</td><td>о ком? о чём?</td><td>в, на, о, при</td></tr>
+    </table>
+  </div>
+
+  <!-- MIC ZONE: always visible when STT enabled -->
+  <div class="mic-zone" id="mic-zone">
+    <div class="mic-inner">
+      <button class="mic-btn" id="mic-btn" onclick="toggleListen()">🎙️</button>
+      <div class="mic-right">
+        <div class="mic-label">Голосовой ответ</div>
+        <div class="mic-status" id="mic-status">Нажми на микрофон и скажи ответ</div>
+        <div class="mic-heard" id="mic-heard"><span class="ph">Здесь появится то, что ты скажешь...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="answers-grid" id="ag"></div>
+
+  <div class="fb" id="fb">
+    <div class="fb-title" id="fb-t"></div>
+    <div class="fb-exp" id="fb-e"></div>
+  </div>
+
+  <button class="btn-next" id="btn-next" onclick="nextQ()">Следующий ⚡</button>
+</div>
+
+<!-- RESULTS -->
+<div id="results-screen" class="screen">
+  <div class="results-wrap">
+    <span class="mascot" id="rm">🏆</span>
+    <div class="r-title" id="rt">КВЕСТ ПРОЙДЕН!</div>
+    <div class="r-score" id="rs">0 ✦</div>
+    <div class="r-stars" id="rstar">☆☆☆</div>
+    <div class="r-msg" id="rmsg"></div>
+
+    <!-- КОПИЛКА БАЛЛОВ -->
+    <div class="bank-box">
+      <div class="bank-title">🏦 Копилка Василия</div>
+      <div class="bank-total">Всего баллов: <span id="bank-total-val">0</span> ✦</div>
+      <div class="bank-prizes">
+        <div class="prize" id="prize-chips">
+          🍟 Чипсы<br><span class="prize-need">30 ✦</span>
+          <div class="prize-bar-bg"><div class="prize-bar" id="bar-chips"></div></div>
+        </div>
+        <div class="prize" id="prize-phone">
+          📱 10 мин телефона<br><span class="prize-need">50 ✦</span>
+          <div class="prize-bar-bg"><div class="prize-bar" id="bar-phone"></div></div>
+        </div>
+        <div class="prize" id="prize-gift">
+          🎁 Большой подарок<br><span class="prize-need">150 ✦</span>
+          <div class="prize-bar-bg"><div class="prize-bar" id="bar-gift"></div></div>
+        </div>
+      </div>
+      <div class="bank-hint">За каждый правильный ответ — 10 ✦</div>
+    </div>
+
+    <div class="r-btns">
+      <button class="btn-p" onclick="retryLevel()">Ещё раз 🔄</button>
+      <button class="btn-s" onclick="goHome()">Выбрать квест 🗺️</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+// s = текст на экране (ситуация)
+// p = предложение на экране (с ___ и скобками)
+// v = текст для озвучки (чистый, без скобок и троеточий)
+// o = варианты ответов
+// c = индекс правильного
+// h = подсказка
+// e = объяснение (для озвучки после ответа)
+const LV = [
+  {name:"Бутерброд и Книга",icon:"🥪",qs:[
+    {s:"Василий Боскис обедает. Перед ним бутерброд!",p:"Я съел бутерброд с ___ (сыр)",v:"Я съел бутерброд с... Поставь правильный вариант!",o:["с сыром","с сыре","с сыра","с сыру"],c:0,h:"Съел с ЧЕМ? — Творительный",e:"Правильно! С сыром. Запомни это слово!"},
+    {s:"Снова бутерброд! Другая начинка.",p:"Я съел бутерброд с ___ (селёдка)",v:"Я съел бутерброд с... Поставь правильный вариант!",o:["с селёдки","с селёдкой","о селёдке","с селёдку"],c:1,h:"С ЧЕМ? — Творительный, -ой для ж.р.",e:"Правильно! С селёдкой. Молодец!"},
+    {s:"Василий взял книгу про животных!",p:"Я читал книгу про ___ (собака)",v:"Я читал книгу про... Поставь правильный вариант!",o:["про собаки","про собаке","про собаку","про собакой"],c:2,h:"Про КОГО? — Винительный, -у",e:"Правильно! Про собаку. Отлично!"},
+    {s:"В другой книге пернатый герой!",p:"Я читал книгу про ___ (павлин)",v:"Я читал книгу про... Поставь правильный вариант!",o:["про павлина","про павлине","про павлином","про павлину"],c:0,h:"Про КОГО? — Винительный, одушевлённое -а",e:"Правильно! Про павлина. Запомни — про кого, про павлина!"},
+    {s:"Василий Боскис наблюдает за птицами!",p:"Я слежу в кустах за ___ (ворона)",v:"Я слежу в кустах за... Поставь правильный вариант!",o:["за вороны","за вороной","за ворону","за вороне"],c:1,h:"За КЕМ? — Творительный, -ой",e:"Правильно! За вороной. Молодец!"},
+    {s:"Теперь другая птица!",p:"Я слежу за ___ (снегирь)",v:"Я слежу за... Поставь правильный вариант!",o:["за снегиря","за снегире","за снегирём","за снегирю"],c:2,h:"За КЕМ? — Творительный, снегирь → -ём",e:"Правильно! За снегирём. Снегирь — за снегирём, запомни!"},
+    {s:"Василий мечтает о крутых вещах!",p:"Я мечтаю о ___ (самокат)",v:"Я мечтаю о... Поставь правильный вариант!",o:["о самоката","о самокату","о самокатом","о самокате"],c:3,h:"О ЧЁМ? — Предложный, -е",e:"Правильно! О самокате. Мечтаю — о самокате!"},
+    {s:"Ещё одна мечта!",p:"Я мечтаю о ___ (шляпа)",v:"Я мечтаю о... Поставь правильный вариант!",o:["о шляпе","о шляпы","о шляпой","о шляпу"],c:0,h:"О ЧЁМ? — Предложный, -е",e:"Правильно! О шляпе. Мечтаю — о шляпе!"},
+  ]},
+  {name:"Лес и Поляна",icon:"🌲",qs:[
+    {s:"Кот вышел гулять!",p:"Кот гуляет ___ крыше (по)",v:"Кот гуляет... Поставь правильный вариант!",o:["по крыши","по крышу","по крыше","на крыше"],c:2,h:"По ЧЕМУ? — Дательный, -е",e:"Правильно! По крыше. Гуляет — по крыше!"},
+    {s:"Кот устал и нашёл место для сна.",p:"Кот спит ___ скамейкой (под)",v:"Кот спит... Поставь правильный вариант!",o:["под скамейки","под скамейкой","под скамейку","за скамейкой"],c:1,h:"Под ЧЕМ? — Творительный, -ой",e:"Правильно! Под скамейкой. Спит — под скамейкой!"},
+    {s:"Ночь. Луна светит над озером.",p:"Луна светит ___ озером (над)",v:"Луна светит... Поставь правильный вариант!",o:["над озера","над озеро","под озером","над озером"],c:3,h:"Над ЧЕМ? — Творительный, -ом",e:"Правильно! Над озером. Светит — над озером!"},
+    {s:"Зайчик попал под дождь!",p:"Зайчик мокнет ___ дождём (под)",v:"Зайчик мокнет... Поставь правильный вариант!",o:["под дождя","под дождём","под дождю","от дождя"],c:1,h:"Под ЧЕМ? — Творительный, дождь → -ём",e:"Правильно! Под дождём. Мокнет — под дождём!"},
+    {s:"В саду растёт яблоня.",p:"Яблоня растёт ___ домом (перед)",v:"Яблоня растёт... Поставь правильный вариант!",o:["перед дома","за домом","перед домом","перед дому"],c:2,h:"Перед ЧЕМ? — Творительный, -ом",e:"Правильно! Перед домом. Растёт — перед домом!"},
+    {s:"Гриб нашёл укромное место!",p:"Гриб вырос ___ забором (за)",v:"Гриб вырос... Поставь правильный вариант!",o:["за забора","за забор","за забором","под забором"],c:2,h:"За ЧЕМ? — Творительный, -ом",e:"Правильно! За забором. Вырос — за забором!"},
+    {s:"Собака устала после прогулки.",p:"Собака заснула ___ яблоней (под)",v:"Собака заснула... Поставь правильный вариант!",o:["под яблони","под яблоней","под яблоню","за яблоней"],c:1,h:"Под ЧЕМ? — Творительный, яблоня → -ей",e:"Правильно! Под яблоней. Заснула — под яблоней!"},
+    {s:"Мальчик у реки.",p:"Мальчик сидел ___ берегу (на)",v:"Мальчик сидел... Поставь правильный вариант!",o:["на берега","на берег","на береге","на берегу"],c:3,h:"На ЧЁМ? — Предложный, берег → -у",e:"Правильно! На берегу. Сидел — на берегу, запомни!"},
+  ]},
+  {name:"Кто кого?",icon:"🐺",qs:[
+    {s:"Мальчик верхом на коне!",p:"Мальчик скачет ___ коне (на)",v:"Мальчик скачет... Поставь правильный вариант!",o:["на коня","на коню","на коне","на конём"],c:2,h:"На ЧЁМ? — Предложный, -е",e:"Правильно! На коне. Скачет — на коне!"},
+    {s:"Конь стал всадником!",p:"Конь скачет ___ мальчике (на)",v:"Конь скачет... Поставь правильный вариант!",o:["на мальчика","на мальчике","на мальчику","с мальчиком"],c:1,h:"На КОМ? — Предложный, -е",e:"Правильно! На мальчике. Скачет — на мальчике!"},
+    {s:"Кошка охотится!",p:"Кошка ловит ___ (мышка)",v:"Кошка ловит... Поставь правильный вариант!",o:["мышки","мышку","мышкой","мышке"],c:1,h:"Ловит КОГО? — Винительный, -у",e:"Правильно! Мышку. Ловит — мышку!"},
+    {s:"Мышка превратилась в охотника!",p:"Мышка ловит ___ (кошка)",v:"Мышка ловит... Поставь правильный вариант!",o:["кошки","кошкой","кошку","кошке"],c:2,h:"Ловит КОГО? — Винительный, -у",e:"Правильно! Кошку. Ловит — кошку!"},
+    {s:"Девочка везёт мишку!",p:"Девочка везёт ___ на санках (мишка)",v:"Девочка везёт... на санках. Поставь правильный вариант!",o:["мишкой","мишке","мишки","мишку"],c:3,h:"Везёт КОГО? — Винительный, -у",e:"Правильно! Мишку. Везёт — мишку!"},
+    {s:"Теперь мишка — водитель!",p:"Мишка везёт ___ на санках (девочка)",v:"Мишка везёт... на санках. Поставь правильный вариант!",o:["девочки","девочку","девочкой","девочке"],c:1,h:"Везёт КОГО? — Винительный, -у",e:"Правильно! Девочку. Везёт — девочку!"},
+    {s:"Заяц в опасности!",p:"Заяц убегает ___ волка (от)",v:"Заяц убегает... Поставь правильный вариант!",o:["от волком","от волку","от волка","от волке"],c:2,h:"От КОГО? — Родительный, -а",e:"Правильно! От волка. Убегает — от волка!"},
+    {s:"Теперь волк испугался зайца!",p:"Волк убегает ___ зайца (от)",v:"Волк убегает... Поставь правильный вариант!",o:["от зайце","от зайцем","от зайцу","от зайца"],c:3,h:"От КОГО? — Родительный, -а",e:"Правильно! От зайца. Убегает — от зайца!"},
+  ]},
+  {name:"Зверята",icon:"🦔",qs:[
+    {s:"Медведь готовится к зиме!",p:"Медведь забрался в ___ (берлога)",v:"Медведь забрался... Поставь правильный вариант!",o:["в берлоге","в берлогу","в берлоги","в берлогой"],c:1,h:"В ЧТО? движение — Винительный, -у",e:"Правильно! В берлогу. Забрался — в берлогу!"},
+    {s:"Заяц мчится спасаться!",p:"Заяц бежал по снегу от волка",v:"Заяц бежал... Поставь правильный вариант!",o:["по снега","по снегу","по снегом","по снеге"],c:1,h:"По ЧЕМУ? — Дательный, -у",e:"Правильно! По снегу. Бежал — по снегу!"},
+    {s:"Белка кормит бельчат!",p:"Я насыпал ___ семечек (белка)",v:"Я насыпал... семечек. Поставь правильный вариант!",o:["белку","белкой","белки","белке"],c:3,h:"Насыпал КОМУ? — Дательный, -е",e:"Правильно! Белке. Насыпал — белке!"},
+    {s:"Орешки ждут белку!",p:"Для ___ под сосной лежат орешки (белка)",v:"Для... под сосной лежат орешки. Поставь правильный вариант!",o:["для белки","для белку","для белкой","для белке"],c:0,h:"Для КОГО? — Родительный, -и",e:"Правильно! Для белки. Лежат — для белки!"},
+    {s:"Груши поспели!",p:"Груши висят на ___ (ветка)",v:"Груши висят... Поставь правильный вариант!",o:["на ветку","на веткой","на ветке","на ветки"],c:2,h:"На ЧЁМ? без движения — Предложный, -е",e:"Правильно! На ветке. Висят — на ветке!"},
+    {s:"Лиса спасается от собаки!",p:"Лиса спряталась в ___ (нора)",v:"Лиса спряталась... Поставь правильный вариант!",o:["в норе","в нору","в норы","в норой"],c:1,h:"В ЧТО? движение — Винительный, -у",e:"Правильно! В нору. Спряталась — в нору!"},
+    {s:"Зимой крыши в снегу.",p:"Зимой крыши покрыты ___ (снег)",v:"Зимой крыши покрыты... Поставь правильный вариант!",o:["снега","снегу","снегом","снеге"],c:2,h:"Покрыты ЧЕМ? — Творительный, -ом",e:"Правильно! Снегом. Покрыты — снегом!"},
+    {s:"Финальный вопрос! Василий Боскис, ты справишься!",p:"Зимой мы катаемся на ___ (санки)",v:"Зимой мы катаемся... Поставь правильный вариант!",o:["на санки","на санках","на санкам","на санками"],c:1,h:"На ЧЁМ? мн.ч. — Предложный, -ах",e:"Правильно! На санках. Катаемся — на санках!"},
+  ]},
+];
+
+// ── VOICE SETTINGS ────────────────────────────────────────────────
+const VS = {tts:true, stt:false};
+
+function toggleTTS(){
+  VS.tts=!VS.tts;
+  document.getElementById('tts-tog').classList.toggle('on',VS.tts);
+  if(!VS.tts) stopSpeak();
+}
+function toggleSTT(){
+  VS.stt=!VS.stt;
+  document.getElementById('stt-tog').classList.toggle('on',VS.stt);
+  document.getElementById('mic-zone').classList.toggle('show',VS.stt);
+  if(!VS.stt) stopListen();
+}
+
+// ── TTS: Microsoft Edge neural Russian via SpeechSynthesis ────────
+// Strategy: pick the best Russian voice available in the browser.
+// On Chrome/Edge on Windows/Android, Svetlana/Pavel/Dmitry are available.
+// On others, falls back to any ru-RU voice, then any ru voice.
+let ttsQ = [];
+let ttsBusy = false;
+
+function getVoice(){
+  const vs = speechSynthesis.getVoices();
+  // prefer Microsoft neural voices
+  const prefer = ['svetlana','irina','pavel','dmitry'];
+  for(const n of prefer){
+    const v = vs.find(x=>x.lang.startsWith('ru')&&x.name.toLowerCase().includes(n));
+    if(v) return v;
+  }
+  // any ru-RU
+  const ruRU = vs.find(x=>x.lang==='ru-RU');
+  if(ruRU) return ruRU;
+  // any ru
+  return vs.find(x=>x.lang.startsWith('ru')) || null;
+}
+
+function stopSpeak(){
+  if(window.speechSynthesis) speechSynthesis.cancel();
+  ttsBusy=false; ttsQ=[];
+  document.getElementById('waves').classList.remove('on');
+  document.getElementById('speak-txt').textContent='';
+}
+
+function speak(text, cb){
+  if(!VS.tts || !window.speechSynthesis){if(cb)cb();return;}
+  ttsQ.push({text,cb});
+  if(!ttsBusy) drainQ();
+}
+
+function drainQ(){
+  if(!ttsQ.length){ttsBusy=false;return;}
+  ttsBusy=true;
+  const {text,cb}=ttsQ.shift();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ru-RU';
+  u.rate=0.92;
+  u.pitch=1.08;
+  const v=getVoice();
+  if(v) u.voice=v;
+
+  document.getElementById('waves').classList.add('on');
+  document.getElementById('speak-txt').textContent=text.length>55?text.substring(0,52)+'…':text;
+
+  u.onend=()=>{
+    document.getElementById('waves').classList.remove('on');
+    document.getElementById('speak-txt').textContent='';
+    ttsBusy=false;
+    if(cb)cb();
+    drainQ();
+  };
+  u.onerror=()=>{
+    document.getElementById('waves').classList.remove('on');
+    document.getElementById('speak-txt').textContent='';
+    ttsBusy=false;
+    if(cb)cb();
+    drainQ();
+  };
+  speechSynthesis.speak(u);
+}
+
+// preload voices
+if(window.speechSynthesis){
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+}
+
+function repeatQ(){
+  stopSpeak();
+  const q=LV[G.lvl].qs[G.qi];
+  speak(q.s+' '+q.v);
+}
+
+// ── STT ───────────────────────────────────────────────────────────
+let recog=null, listening=false;
+
+function initRecog(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){setMicSt('⚠️ Используй Chrome — там есть микрофон');return false;}
+  recog=new SR();
+  recog.lang='ru-RU';
+  recog.interimResults=true;
+  recog.maxAlternatives=5;
+  recog.continuous=false;
+
+  recog.onstart=()=>{
+    listening=true;
+    const b=document.getElementById('mic-btn');
+    b.classList.add('live'); b.textContent='🔴';
+    setMicSt('🔴 Слушаю! Говори!', true);
+    setHeard('');
+  };
+  recog.onresult=(e)=>{
+    const r=e.results[e.results.length-1];
+    const t=r[0].transcript.trim();
+    setHeard(t);
+    if(r.isFinal) processVoice(t,r);
+  };
+  recog.onerror=(e)=>{
+    stopListen();
+    if(e.error==='no-speech') setMicSt('Не услышал. Нажми снова!');
+    else if(e.error==='not-allowed') setMicSt('⚠️ Разреши микрофон в браузере');
+    else setMicSt('Ошибка. Попробуй снова.');
+  };
+  recog.onend=()=>stopListen();
+  return true;
+}
+
+function toggleListen(){
+  if(G.answered) return;
+  if(listening){stopListen();return;}
+  stopSpeak();
+  if(!recog&&!initRecog()) return;
+  try{ recog.start(); }
+  catch(e){ recog=null; setMicSt('Нажми ещё раз'); }
+}
+function stopListen(){
+  listening=false;
+  if(recog){try{recog.stop();}catch(e){}}
+  const b=document.getElementById('mic-btn');
+  if(b){b.classList.remove('live');b.textContent='🎙️';}
+  if(!G.answered) setMicSt('Нажми на микрофон и скажи ответ');
+}
+function setMicSt(txt,live=false){
+  const el=document.getElementById('mic-status');
+  el.textContent=txt;
+  el.className='mic-status'+(live?' live':'');
+}
+function setHeard(txt){
+  const el=document.getElementById('mic-heard');
+  el.innerHTML=txt
+    ?'<span style="color:var(--cyan);font-weight:700">« '+txt+' »</span>'
+    :'<span class="ph">Здесь появится то, что ты скажешь...</span>';
+}
+
+function processVoice(transcript, resultItem){
+  if(G.answered) return;
+  stopListen();
+  const q=LV[G.lvl].qs[G.qi];
+  const alts=[];
+  for(let i=0;i<resultItem.length;i++) alts.push(resultItem[i].transcript.trim().toLowerCase());
+
+  let found=-1;
+  for(const alt of alts){
+    // clean punctuation from what was heard
+    const heard = alt.replace(/[.,!?]/g,'').trim();
+    for(let i=0;i<q.o.length;i++){
+      const opt = q.o[i].toLowerCase().trim();
+      // exact match
+      if(heard === opt){ found=i; break; }
+      // heard contains the full option (e.g. "с сыром да" → "с сыром")
+      if(heard.includes(opt) && opt.length >= 4){ found=i; break; }
+      // option contains what was heard — only if heard is at least 80% of option length
+      if(opt.includes(heard) && heard.length >= Math.ceil(opt.length * 0.8)){ found=i; break; }
+      // levenshtein — only if difference is small relative to word length
+      const dist = lev(heard, opt);
+      const maxAllowed = opt.length <= 4 ? 0 : opt.length <= 7 ? 1 : 2;
+      if(dist <= maxAllowed){ found=i; break; }
+    }
+    if(found>=0) break;
+  }
+
+  if(found>=0){
+    document.querySelectorAll('.ans').forEach(b=>{
+      if(parseInt(b.dataset.i)===found){b.classList.add('hi');setTimeout(()=>pick(b,found,q),500);}
+    });
+  } else {
+    setMicSt('Не засчитано: «'+transcript+'». Скажи чётче или нажми кнопку!');
+    speak('Не засчитано. Попробуй сказать чётче или выбери кнопкой.');
+  }
+}
+
+function lev(a,b){
+  const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i?j?0:i:j));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+// ── GAME STATE ────────────────────────────────────────────────────
+const G={lvl:0,qi:0,score:0,lives:3,answered:false,res:[],lscore:[null,null,null,null],total:0};
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome(){stopSpeak();stopListen();updateStars();showScreen('intro-screen');}
+function updateStars(){
+  document.getElementById('tot').textContent=G.total;
+  G.lscore.forEach((sc,i)=>{
+    const el=document.getElementById('s'+i);if(sc===null)return;
+    el.textContent=sc>=7?'★★★':sc>=5?'★★☆':'★☆☆';
+    el.style.color=sc>=7?'#f5c842':sc>=5?'#a855f7':'#64748b';
+  });
+}
+
+function startLevel(idx){
+  G.lvl=idx;G.qi=0;G.score=0;G.lives=3;G.answered=false;G.res=[];
+  const lvl=LV[idx];
+  document.getElementById('lvl-nm').textContent=lvl.icon+' '+lvl.name;
+  document.getElementById('sc').textContent='0';
+  document.getElementById('lv').textContent='3';
+  // show mic zone if stt on
+  document.getElementById('mic-zone').classList.toggle('show',VS.stt);
+  buildDots(lvl.qs.length);
+  showScreen('game-screen');
+  speak('Квест '+lvl.name+'. Поехали!', ()=>renderQ());
+}
+function retryLevel(){startLevel(G.lvl);}
+
+function buildDots(n){
+  const el=document.getElementById('dots');el.innerHTML='';
+  for(let i=0;i<n;i++){const d=document.createElement('div');d.className='dot'+(i===0?' cur':'');d.id='d'+i;el.appendChild(d);}
+}
+function updateDots(){
+  LV[G.lvl].qs.forEach((_,i)=>{
+    const d=document.getElementById('d'+i);if(!d)return;
+    d.className='dot';
+    if(i<G.qi) d.classList.add(G.res[i]==='ok'?'done':'bad');
+    else if(i===G.qi) d.classList.add('cur');
+  });
+}
+
+function renderQ(){
+  const q=LV[G.lvl].qs[G.qi];
+  G.answered=false;
+  document.getElementById('qlbl').textContent=`Задание ${G.qi+1} из ${LV[G.lvl].qs.length}`;
+  document.getElementById('xp').style.width=(G.qi/LV[G.lvl].qs.length*100)+'%';
+  document.getElementById('qsetup').textContent=q.s;
+  document.getElementById('qprompt').innerHTML=q.p.replace('___','<span class="blank" id="blnk">___</span>');
+  document.getElementById('qhint').textContent='💡 '+q.h;
+  document.getElementById('qhint').classList.remove('vis');
+  document.getElementById('tbl').classList.remove('vis');
+  document.getElementById('hbtn').style.display='block';
+  document.getElementById('fb').className='fb';
+  document.getElementById('btn-next').className='btn-next';
+
+  if(VS.stt){
+    const mb=document.getElementById('mic-btn');
+    mb.classList.remove('live','off'); mb.textContent='🎙️'; mb.onclick=toggleListen;
+    setMicSt('Нажми на микрофон и скажи ответ');
+    setHeard('');
+  }
+
+  const ag=document.getElementById('ag'); ag.innerHTML='';
+  const sh=q.o.map((o,i)=>({t:o,i}));
+  for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]];}
+  sh.forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='ans';b.textContent=opt.t;b.dataset.i=opt.i;
+    b.onclick=()=>pick(b,opt.i,q);
+    ag.appendChild(b);
+  });
+  updateDots();
+  document.getElementById('sc').textContent=G.score;
+  document.getElementById('lv').textContent=G.lives;
+  speak(q.s+' '+q.v);
+}
+
+function pick(btn,idx,q){
+  if(G.answered) return;
+  G.answered=true;
+  stopListen();
+  document.getElementById('hbtn').style.display='none';
+  document.getElementById('qhint').classList.remove('vis');
+  document.getElementById('tbl').classList.remove('vis');
+  document.querySelectorAll('.ans').forEach(b=>{b.disabled=true;b.classList.remove('hi');});
+
+  if(VS.stt){
+    const mb=document.getElementById('mic-btn');
+    mb.classList.add('off'); mb.onclick=null;
+  }
+
+  const bl=document.getElementById('blnk');
+  const ok=idx===q.c;
+
+  if(ok){
+    btn.classList.add('ok');G.score+=10;G.res.push('ok');
+    bl.textContent=q.o[q.c];bl.style.color='var(--green)';bl.style.borderBottomColor='var(--green)';
+    const ph=winP();
+    showFB(true,ph.screen,q.e);
+    confetti();
+    speak(ph.voice+'. '+q.e);
+    if(VS.stt) setMicSt('✅ Правильно!');
+  } else {
+    btn.classList.add('no');
+    document.querySelectorAll('.ans').forEach(b=>{if(parseInt(b.dataset.i)===q.c)b.classList.add('ok');});
+    G.lives=Math.max(0,G.lives-1);G.res.push('no');
+    bl.textContent=q.o[q.c];bl.style.color='var(--green)';
+    const ph=loseP();
+    showFB(false,ph.screen,q.e);
+    speak(ph.voice+' '+q.e);
+    if(VS.stt) setMicSt('❌ Не то. Смотри правильный ответ!');
+  }
+  document.getElementById('sc').textContent=G.score;
+  document.getElementById('lv').textContent=G.lives;
+  document.getElementById('btn-next').className='btn-next show';
+  updateDots();
+}
+
+function nextQ(){
+  stopSpeak();G.qi++;
+  if(G.qi>=LV[G.lvl].qs.length) showResults(); else renderQ();
+}
+function showHint(){
+  document.getElementById('qhint').classList.add('vis');
+  document.getElementById('tbl').classList.add('vis');
+  const h=LV[G.lvl].qs[G.qi].h.replace(/[→\-]/g,' ').replace(/ж\.р\./g,'женский род').replace(/ср\.р\./g,'средний род').replace(/мн\.ч\./g,'множественное число');
+  speak('Подсказка. '+h);
+}
+function showFB(win,title,exp){
+  const el=document.getElementById('fb');
+  el.className='fb show '+(win?'win':'lose');
+  document.getElementById('fb-t').textContent=title;
+  document.getElementById('fb-e').textContent=exp;
+}
+
+const WP=['Точное попадание, Василий!','Молния! Правильно!','Детектив не ошибается!','Огонь! Верно!','Блестяще!','Кристалл получен!','Суперответ!','Василий знает своё дело!'];
+const WP_SCREEN=['🎯 Точное попадание, Василий!','⚡ Молния! Правильно!','🏆 Детектив не ошибается!','🔥 Огонь! Верно!','✨ Блестяще!','💎 Кристалл получен!','🚀 Суперответ!','👑 Василий знает своё дело!'];
+const LP=['Почти! Смотри правильный ответ.','Детективы учатся на ошибках!','Запомни — в следующий раз точно!','Трудное место, но теперь знаешь!'];
+const LP_SCREEN=['🤔 Почти! Смотри правильный ответ.','💪 Детективы учатся на ошибках!','🔄 Запомни — в следующий раз точно!','🧩 Трудное место, но теперь знаешь!'];
+let wi=0,li=0;
+function winP(){return {screen:WP_SCREEN[wi%WP_SCREEN.length], voice:WP[wi++%WP.length]};}
+function loseP(){return {screen:LP_SCREEN[li%LP_SCREEN.length], voice:LP[li++%LP.length]};}
+
+function confetti(){
+  const c=['#f5c842','#00d4ff','#00ff88','#a855f7','#ff4d6d'];
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='part';
+    p.style.cssText=`left:${Math.random()*100}vw;top:${Math.random()*30}vh;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;background:${c[Math.floor(Math.random()*c.length)]};animation-delay:${Math.random()*.4}s;animation-duration:${1+Math.random()*.8}s`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),2200);
+  }
+}
+
+function showResults(){
+  stopSpeak();
+  const correct=G.res.filter(r=>r==='ok').length,total=LV[G.lvl].qs.length,pct=correct/total;
+  let stars,mascot,title,msg,voiceMsg;
+  if(pct===1){
+    stars='★★★';mascot='🏆';title='ИДЕАЛЬНЫЙ КВЕСТ!';
+    msg=`Василий, все ${total} из ${total} верно! Так держать!`;
+    voiceMsg=`Идеальный квест! Все ${total} верно! Отличная работа, Василий!`;
+  } else if(pct>=.75){
+    stars='★★☆';mascot='🥇';title='ОТЛИЧНЫЙ РЕЗУЛЬТАТ!';
+    msg=`${correct} из ${total} верно! Ещё чуть-чуть — и будет идеально!`;
+    voiceMsg=`Отличный результат! ${correct} из ${total} верно!`;
+  } else if(pct>=.5){
+    stars='★☆☆';mascot='💪';title='ХОРОШИЙ СТАРТ!';
+    msg=`${correct} из ${total} верно. Сыграй ещё раз — станет лучше!`;
+    voiceMsg=`Хороший старт! ${correct} из ${total} верно. Попробуй ещё раз!`;
+  } else {
+    stars='☆☆☆';mascot='🎯';title='ТРЕНИРУЕМСЯ ДАЛЬШЕ!';
+    msg=`${correct} из ${total} верно. Детективы не сдаются!`;
+    voiceMsg=`${correct} из ${total} верно. Не сдавайся, попробуй ещё раз!`;
+  }
+
+  G.lscore[G.lvl]=correct;
+  G.total+=G.score;
+
+  document.getElementById('rm').textContent=mascot;
+  document.getElementById('rt').textContent=title;
+  document.getElementById('rs').textContent=G.score+' ✦';
+  document.getElementById('rstar').textContent=stars;
+  document.getElementById('rmsg').textContent=msg;
+
+  // Update bank
+  const total_pts = G.total;
+  document.getElementById('bank-total-val').textContent = total_pts;
+
+  const prizes = [
+    {id:'chips', bar:'bar-chips', need:30},
+    {id:'phone', bar:'bar-phone', need:50},
+    {id:'gift',  bar:'bar-gift',  need:150},
+  ];
+  prizes.forEach(pr => {
+    const pct_prize = Math.min(total_pts / pr.need * 100, 100);
+    document.getElementById(pr.bar).style.width = pct_prize+'%';
+    const el = document.getElementById('prize-'+pr.id);
+    if(total_pts >= pr.need) el.classList.add('done');
+    else el.classList.remove('done');
+  });
+
+  // Bank voice message
+  let bankMsg = '';
+  if(total_pts >= 150) bankMsg = 'Большой подарок заработан!';
+  else if(total_pts >= 50) bankMsg = `В копилке ${total_pts} баллов. До большого подарка осталось ${150-total_pts}!`;
+  else if(total_pts >= 30) bankMsg = `В копилке ${total_pts} баллов. Уже можно взять чипсы!`;
+  else bankMsg = `В копилке ${total_pts} баллов. До чипсов осталось ${30-total_pts}!`;
+
+  showScreen('results-screen');
+  updateStars();
+  if(pct>=.75) confetti();
+  speak(voiceMsg+' '+bankMsg);
+}
+
+// ── RECORDER ─────────────────────────────────────────────────────
+function getAllVoicePrompts(){
+  const prompts=[];
+  LV.forEach(lvl=>lvl.qs.forEach(q=>prompts.push({display:q.p.replace('___','______'),voice:q.v,setup:q.s})));
+  return prompts;
+}
+
+const REC_KEY_PREFIX='lq_voice_';
+let recIdx=0;
+let recMediaRecorder=null;
+let recChunks=[];
+let recBlob=null;
+let recAudio=null;
+
+function openRecorder(){
+  recIdx=0;
+  showScreen('recorder-screen');
+  buildRecDots();
+  renderRecSlot();
+}
+
+function buildRecDots(){
+  const prompts=getAllVoicePrompts();
+  const el=document.getElementById('rec-dots');
+  el.innerHTML='';
+  prompts.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='rec-dot'+(i===recIdx?' cur':'')+(localStorage.getItem(REC_KEY_PREFIX+i)?' has':'');
+    d.title='Задание '+(i+1);
+    d.onclick=()=>{recIdx=i;renderRecSlot();buildRecDots();};
+    el.appendChild(d);
+  });
+}
+
+function renderRecSlot(){
+  const prompts=getAllVoicePrompts();
+  const total=prompts.length;
+  const q=prompts[recIdx];
+  document.getElementById('rec-progress').textContent=(recIdx+1)+' / '+total;
+  document.getElementById('rec-q-num').textContent='ЗАДАНИЕ '+(recIdx+1)+' ИЗ '+total;
+  document.getElementById('rec-q-text').textContent=q.setup+' '+q.display;
+  document.getElementById('rec-q-voice').textContent=q.voice;
+  const saved=localStorage.getItem(REC_KEY_PREFIX+recIdx);
+  const statusEl=document.getElementById('rec-status');
+  const playBtn=document.getElementById('rec-play-btn');
+  if(saved){
+    statusEl.textContent='Запись есть! Можно прослушать или перезаписать.';
+    statusEl.className='rec-status-text done';
+    playBtn.disabled=false;
+    try{
+      const arr=JSON.parse(saved);
+      recBlob=new Blob([new Uint8Array(arr)],{type:'audio/webm'});
+    }catch(e){recBlob=null;}
+  } else {
+    statusEl.textContent='Готово к записи';
+    statusEl.className='rec-status-text idle';
+    playBtn.disabled=true;
+    recBlob=null;
+  }
+  recChunks=[];
+  document.getElementById('rec-start-btn').disabled=false;
+  document.getElementById('rec-stop-btn').disabled=true;
+}
+
+async function recStart(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    recChunks=[];
+    recMediaRecorder=new MediaRecorder(stream);
+    recMediaRecorder.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data);};
+    recMediaRecorder.onstop=()=>{
+      recBlob=new Blob(recChunks,{type:'audio/webm'});
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const arr=Array.from(new Uint8Array(reader.result));
+        try{
+          localStorage.setItem(REC_KEY_PREFIX+recIdx,JSON.stringify(arr));
+        }catch(e){
+          alert('Недостаточно памяти. Удалите старые записи кнопкой удалить.');
+        }
+        const statusEl=document.getElementById('rec-status');
+        statusEl.textContent='Записано! Прослушайте.';
+        statusEl.className='rec-status-text done';
+        document.getElementById('rec-play-btn').disabled=false;
+        document.getElementById('rec-start-btn').disabled=false;
+        buildRecDots();
+        stream.getTracks().forEach(t=>t.stop());
+      };
+      reader.readAsArrayBuffer(recBlob);
+    };
+    recMediaRecorder.start();
+    document.getElementById('rec-status').textContent='Записываю... говорите!';
+    document.getElementById('rec-status').className='rec-status-text recording';
+    document.getElementById('rec-start-btn').disabled=true;
+    document.getElementById('rec-stop-btn').disabled=false;
+  }catch(e){
+    document.getElementById('rec-status').textContent='Нет доступа к микрофону. Разрешите в браузере.';
+    document.getElementById('rec-status').className='rec-status-text idle';
+  }
+}
+
+function recStop(){
+  if(recMediaRecorder&&recMediaRecorder.state!=='inactive') recMediaRecorder.stop();
+  document.getElementById('rec-stop-btn').disabled=true;
+}
+
+function recPlay(){
+  if(!recBlob) return;
+  if(recAudio){recAudio.pause();recAudio=null;}
+  recAudio=new Audio(URL.createObjectURL(recBlob));
+  recAudio.play();
+}
+
+function recDelete(){
+  localStorage.removeItem(REC_KEY_PREFIX+recIdx);
+  recBlob=null;
+  renderRecSlot();
+  buildRecDots();
+}
+
+function recGo(dir){
+  const total=getAllVoicePrompts().length;
+  recIdx=Math.max(0,Math.min(total-1,recIdx+dir));
+  renderRecSlot();
+  buildRecDots();
+}
+
+// Wrap speak: if custom recording exists for this question, play it
+const _ttsSpeak=speak;
+function speak(text,cb){
+  const prompts=getAllVoicePrompts();
+  for(let i=0;i<prompts.length;i++){
+    if(text.includes(prompts[i].voice)){
+      const saved=localStorage.getItem(REC_KEY_PREFIX+i);
+      if(saved){
+        try{
+          stopSpeak();
+          const arr=JSON.parse(saved);
+          const blob=new Blob([new Uint8Array(arr)],{type:'audio/webm'});
+          const audio=new Audio(URL.createObjectURL(blob));
+          document.getElementById('waves').classList.add('on');
+          document.getElementById('speak-txt').textContent='Голос логопеда...';
+          audio.onended=()=>{
+            document.getElementById('waves').classList.remove('on');
+            document.getElementById('speak-txt').textContent='';
+            if(cb)cb();
+          };
+          audio.onerror=()=>{
+            document.getElementById('waves').classList.remove('on');
+            document.getElementById('speak-txt').textContent='';
+            _ttsSpeak(text,cb);
+          };
+          audio.play();
+          return;
+        }catch(e){}
+      }
+      break;
+    }
+  }
+  _ttsSpeak(text,cb);
+}
+
+</script>
+
+<!-- RECORDER (логопед) -->
+<div id="recorder-screen" class="screen">
+  <div class="rec-header">
+    <div class="rec-title">🎙️ Запись голоса</div>
+    <div class="rec-progress" id="rec-progress">1 / 32</div>
+    <button class="btn-back" onclick="showScreen('intro-screen')">← Выход</button>
+  </div>
+
+  <div class="rec-note">
+    Нажмите <b>🔴 Запись</b>, произнесите фразу, нажмите <b>⏹ Стоп</b>.
+    Затем <b>▶ Прослушать</b> — и если хорошо, переходите к следующему заданию.
+    Зелёные точки = уже записано.
+  </div>
+
+  <div class="rec-dots" id="rec-dots"></div>
+
+  <div class="rec-card">
+    <div class="rec-q-num" id="rec-q-num">ЗАДАНИЕ 1 ИЗ 32</div>
+    <div class="rec-q-text" id="rec-q-text"></div>
+    <div class="rec-q-voice">Скажите: <span id="rec-q-voice"></span></div>
+  </div>
+
+  <div class="rec-status">
+    <div class="rec-status-text idle" id="rec-status">Готово к записи</div>
+  </div>
+
+  <div class="rec-controls">
+    <button class="rec-btn start" id="rec-start-btn" onclick="recStart()">🔴 Запись</button>
+    <button class="rec-btn stop" id="rec-stop-btn" onclick="recStop()" disabled>⏹ Стоп</button>
+    <button class="rec-btn play" id="rec-play-btn" onclick="recPlay()" disabled>▶ Прослушать</button>
+    <button class="rec-btn del" onclick="recDelete()">🗑 Удалить</button>
+  </div>
+
+  <div class="rec-nav">
+    <button class="rec-nav-btn" onclick="recGo(-1)">← Назад</button>
+    <button class="rec-nav-btn primary" onclick="recGo(1)">Следующее →</button>
+  </div>
+</div>
+
+</body>
+</html>
