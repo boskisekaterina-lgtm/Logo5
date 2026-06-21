@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ЛОГОКВЕСТРУМ</title>
+<style>
+  :root {
+    --bg: #0B0E1A;
+    --surface: #131729;
+    --card: #1A1F35;
+    --border: #252B45;
+    --violet: #7C5CFC;
+    --violet-dim: #3D2E8A;
+    --amber: #FFB830;
+    --lime: #6EE86B;
+    --coral: #FF5C5C;
+    --sky: #4DC8FF;
+    --text: #E8ECFF;
+    --muted: #7A82A8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+  #app {
+    width: 100%;
+    max-width: 430px;
+    padding: 20px 16px 60px;
+    min-height: 100vh;
+  }
+  .screen { display: none; flex-direction: column; gap: 16px; }
+  .screen.active { display: flex; }
+
+  /* Typography */
+  .title-gradient {
+    background: linear-gradient(90deg, var(--violet), var(--sky));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .card-surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--violet), #5A3FD0);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 15px 24px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    width: 100%;
+    font-family: inherit;
+    box-shadow: 0 4px 20px rgba(124,92,252,0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-secondary {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 13px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-secondary:hover { background: var(--surface); }
+  .btn-back {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .btn-lime {
+    background: var(--lime);
+    color: #0A1A0A;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 28px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    padding: 6px;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .coins-display {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  /* Progress bar */
+  .bar-track {
+    background: var(--border);
+    border-radius: 8px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s ease;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  /* Hero card */
+  .hero-card {
+    background: linear-gradient(135deg, var(--violet-dim) 0%, var(--bg) 100%);
+    border: 1px solid rgba(124,92,252,0.3);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+  }
+  .avatar { font-size: 52px; margin-bottom: 8px; }
+  .hero-name { font-size: 22px; font-weight: 800; }
+  .hero-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin: 16px 0;
+  }
+  .stat-item { text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 800; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Skills grid */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .skill-label { font-size: 11px; color: var(--muted); margin-bottom: 7px; }
+  .skill-val { font-size: 12px; font-weight: 700; margin-top: 5px; }
+
+  /* Map zones */
+  .zone-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .zone-card:hover:not(.locked) { border-color: var(--violet); }
+  .zone-card.locked { opacity: 0.45; cursor: default; }
+  .zone-icon { font-size: 38px; flex-shrink: 0; }
+  .zone-name { font-weight: 700; font-size: 16px; }
+  .zone-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .zone-arrow { margin-left: auto; color: var(--violet); font-size: 20px; }
+
+  /* Quest header */
+  .quest-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .quest-progress-info {
+    flex: 1;
+  }
+  .quest-step { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+
+  /* Questor bubble */
+  .questor-bubble {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid var(--violet-dim);
+  }
+  .questor-icon { font-size: 30px; flex-shrink: 0; }
+  .questor-name { font-size: 11px; color: var(--violet); font-weight: 700; margin-bottom: 3px; }
+  .questor-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+  /* Speech task */
+  .phrase-box {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .hint-text { font-size: 12px; color: var(--amber); margin-top: 10px; text-align: center; }
+
+  /* Mic area */
+  .mic-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+  }
+  .mic-wrapper {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mic-ring {
+    position: absolute;
+    border-radius: 50%;
+    width: 88px;
+    height: 88px;
+    border: 2px solid var(--amber);
+    opacity: 0;
+  }
+  .mic-ring.r1 { animation: none; }
+  .mic-ring.r2 { animation: none; }
+  .mic-wrapper.listening .r1 { animation: ring 1.2s ease-out infinite; }
+  .mic-wrapper.listening .r2 { animation: ring 1.2s ease-out 0.4s infinite; }
+  @keyframes ring {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+  .mic-btn {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s;
+    background: radial-gradient(circle, var(--violet), #5A3FD0);
+    box-shadow: 0 0 16px rgba(124,92,252,0.5);
+  }
+  .mic-btn.active {
+    background: radial-gradient(circle, var(--amber), #D4920A);
+    box-shadow: 0 0 24px rgba(255,184,48,0.6);
+  }
+  .mic-hint { font-size: 13px; color: var(--muted); text-align: center; }
+
+  /* Transcript card */
+  .transcript-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .transcript-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+  .transcript-text { font-size: 15px; font-style: italic; color: var(--text); }
+
+  /* Score bar */
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  /* Result cards */
+  .result-ok {
+    background: #1A2E1A;
+    border: 1px solid rgba(110,232,107,0.3);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  .result-fail {
+    background: #2A1A1A;
+    border: 1px solid rgba(255,92,92,0.3);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  .result-emoji { font-size: 32px; margin-bottom: 8px; }
+  .result-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .result-sub { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  .result-explain { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 14px; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  /* Grammar options */
+  .options-list { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--violet); }
+  .option-btn.correct { background: #1A2E1A; border-color: var(--lime); color: var(--lime); }
+  .option-btn.wrong { background: #2A1A1A; border-color: var(--coral); color: var(--coral); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter { color: var(--muted); font-size: 13px; min-width: 20px; }
+
+  /* Reward overlay */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+  }
+  .overlay.show { display: flex; }
+  .reward-popup {
+    background: var(--card);
+    border: 1px solid var(--violet);
+    border-radius: 24px;
+    padding: 36px 40px;
+    text-align: center;
+    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .reward-emoji { font-size: 52px; margin-bottom: 12px; }
+  .reward-coins { font-size: 26px; font-weight: 900; color: var(--lime); }
+  .reward-xp { font-size: 16px; color: var(--violet); margin-top: 4px; }
+
+  /* End screen */
+  .end-screen { text-align: center; }
+  .end-trophy { font-size: 72px; margin-bottom: 12px; }
+  .end-title { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  .end-sub { color: var(--muted); font-size: 15px; margin-bottom: 20px; }
+  .end-pills {
+    display: flex;
+    justify-content: space-around;
+    background: linear-gradient(135deg, var(--violet-dim), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .end-pill { text-align: center; }
+  .end-pill-icon { font-size: 28px; }
+  .end-pill-label { font-size: 12px; margin-top: 4px; }
+
+  /* Gospel reading */
+  .gospel-hero {
+    background: linear-gradient(160deg, #1a1000 0%, #0B0E1A 100%);
+    border: 1px solid rgba(255,184,48,0.25);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  .gospel-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+  .gospel-subtitle {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .gospel-ref { font-size: 12px; color: var(--muted); }
+  .gospel-stats {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 16px;
+  }
+  .gospel-stat { text-align: center; }
+  .gospel-stat-val { font-size: 20px; font-weight: 800; color: var(--amber); }
+  .gospel-stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Sentence list */
+  .sentence-item {
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    transition: all 0.35s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .sentence-item.done {
+    background: #111E11;
+    border-color: rgba(110,232,107,0.4);
+  }
+  .sentence-item.active-reading {
+    border-color: var(--amber);
+    background: #1E1800;
+  }
+  .sentence-item.error-reading {
+    border-color: var(--coral);
+    background: #1E0F0F;
+  }
+  .sentence-verse {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .sentence-text {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .sentence-item.done .sentence-text { color: var(--lime); }
+  .sentence-status {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-size: 18px;
+  }
+
+  /* Reading mic panel */
+  .reading-panel {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 20px 28px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .reading-panel.show { display: flex; }
+  .reading-panel-verse {
+    font-size: 11px;
+    color: var(--amber);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .reading-panel-text {
+    font-size: 14px;
+    font-family: Georgia, serif;
+    color: var(--text);
+    line-height: 1.5;
+    border-left: 3px solid var(--amber);
+    padding-left: 12px;
+    background: rgba(255,184,48,0.05);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 12px;
+  }
+  .reading-panel-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .reading-mic-btn {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.3s;
+    background: radial-gradient(circle, var(--amber), #C48A00);
+    box-shadow: 0 0 16px rgba(255,184,48,0.4);
+  }
+  .reading-mic-btn.listening {
+    background: radial-gradient(circle, var(--coral), #C43000);
+    box-shadow: 0 0 24px rgba(255,92,92,0.5);
+    animation: micPulse 0.8s ease-in-out infinite alternate;
+  }
+  @keyframes micPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+  }
+  .reading-feedback {
+    flex: 1;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .reading-feedback.ok { color: var(--lime); }
+  .reading-feedback.err { color: var(--coral); }
+  .gospel-done-banner {
+    background: linear-gradient(135deg, #111E11, #0B0E1A);
+    border: 1px solid var(--lime);
+    border-radius: 18px;
+    padding: 28px;
+    text-align: center;
+    display: none;
+  }
+  .gospel-done-banner.show { display: block; }
+  .reward-option {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 15px;
+    color: var(--text);
+  }
+  @keyframes phonePulse {
+    from { transform: rotate(-12deg) scale(1); }
+    to   { transform: rotate(12deg)  scale(1.1); }
+  }
+  @keyframes bounceIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  @media (max-width: 360px) {
+    .stats-row { gap: 16px; }
+    .phrase-box { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="title-gradient">ЛОГОКВЕСТРУМ</div>
+    <div class="coins-display">🪙 <span id="coins-display">320</span></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN: HOME
+  ═══════════════════════════════════════════ -->
+  <div id="screen-home" class="screen active">
+    <div class="hero-card">
+      <div class="avatar">🧙‍♂️</div>
+      <div class="hero-name" id="hero-name">Артём</div>
+      <div class="hero-sub" id="hero-level">Уровень 1 · Квестор речи</div>
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-val" style="color:var(--amber)" id="home-coins">320</div>
+          <div class="stat-label">монет</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" style="color:var(--lime)" id="home-completed">0</div>
+          <div class="stat-label">заданий</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" style="color:var(--violet)">3🔥</div>
+          <div class="stat-label">дней подряд</div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:11px;color:var(--muted)">Опыт до следующего уровня</span>
+          <span style="font-size:11px;color:var(--violet)" id="xp-label">45 / 100 XP</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="xp-bar" style="width:45%;background:var(--violet)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skills-grid">
+      <div class="card">
+        <div class="skill-label">🎙️ Произношение</div>
+        <div class="bar-track">
+          <div class="bar-fill" id="speech-bar" style="width:62%;background:var(--amber)"></div>
+        </div>
+        <div class="skill-val" style="color:var(--amber)" id="speech-pct">62%</div>
+      </div>
+      <div class="card">
+        <div class="skill-label">📖 Грамматика</div>
+        <div class="bar-track">
+          <div class="bar-fill" id="grammar-bar" style="width:55%;background:var(--lime)"></div>
+        </div>
+        <div class="skill-val" style="color:var(--lime)" id="grammar-pct">55%</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="startRandomQuest()">⚔️ Начать квест</button>
+    <button class="btn-secondary" onclick="showScreen('map')">🗺️ Карта миров</button>
+    <button class="btn-secondary" onclick="showScreen('gospel')" style="border-color:rgba(255,184,48,0.4);color:var(--amber)">✝️ Евангелие · Читаем вслух</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN: MAP
+  ═══════════════════════════════════════════ -->
+  <div id="screen-map" class="screen">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+      <div style="font-size:18px;font-weight:800">Карта миров</div>
+    </div>
+
+    <div id="zones-list"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN: QUEST
+  ═══════════════════════════════════════════ -->
+  <div id="screen-quest" class="screen">
+    <div class="quest-header">
+      <button class="btn-back" onclick="confirmStop()">← Стоп</button>
+      <div class="quest-progress-info">
+        <div class="quest-step" id="quest-step">Задание 1 из 4</div>
+        <div class="bar-track">
+          <div class="bar-fill" id="quest-progress-bar" style="width:0%;background:var(--violet)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questor -->
+    <div class="questor-bubble">
+      <div class="questor-icon">🧙</div>
+      <div>
+        <div class="questor-name">КВЕСТОР ГОВОРИТ:</div>
+        <div class="questor-text" id="questor-text">Готовься к испытанию!</div>
+      </div>
+    </div>
+
+    <!-- Task container -->
+    <div id="task-container"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN: END
+  ═══════════════════════════════════════════ -->
+  <div id="screen-end" class="screen">
+    <div class="end-screen">
+      <div class="end-trophy">🏆</div>
+      <div class="end-title">Квест пройден!</div>
+      <div class="end-sub" id="end-sub">Выполнено заданий: 4</div>
+      <div class="end-pills">
+        <div class="end-pill">
+          <div class="end-pill-icon">🎙️</div>
+          <div class="end-pill-label" style="color:var(--amber)">Речь улучшена</div>
+        </div>
+        <div class="end-pill">
+          <div class="end-pill-icon">📖</div>
+          <div class="end-pill-label" style="color:var(--lime)">Грамматика +</div>
+        </div>
+        <div class="end-pill">
+          <div class="end-pill-icon">⭐</div>
+          <div class="end-pill-label" style="color:var(--violet)">Опыт получен</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-direction:column">
+        <button class="btn-primary" onclick="startRandomQuest()">⚔️ Ещё квест!</button>
+        <button class="btn-secondary" onclick="showScreen('home')">🏠 На главную</button>
+      </div>
+    </div>
+  </div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN: GOSPEL
+═══════════════════════════════════════════ -->
+<div id="screen-gospel" class="screen">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="btn-back" onclick="closeGospel()">← Назад</button>
+    <div style="font-size:17px;font-weight:800">Евангелие</div>
+  </div>
+
+  <!-- TEXT INPUT BLOCK -->
+  <div id="gospel-input-block">
+    <div style="font-size:11px;color:var(--amber);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">
+      📋 Вставь евангельский отрывок
+    </div>
+    <textarea id="gospel-textarea"
+      placeholder="Вставь или напечатай текст отрывка здесь — система сама разобьёт на предложения…"
+      style="
+        width:100%;min-height:130px;
+        background:var(--surface);border:1px solid var(--border);
+        border-radius:12px;padding:14px;
+        color:var(--text);font-size:14px;
+        font-family:Georgia,serif;line-height:1.7;
+        resize:vertical;outline:none;
+        transition:border-color 0.2s;
+      "
+      oninput="this.style.borderColor=this.value.trim()?'var(--amber)':'var(--border)'"
+    ></textarea>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button onclick="loadGospelText()" style="
+        flex:1;background:linear-gradient(135deg,#C48A00,var(--amber));
+        color:#0A0800;border:none;border-radius:12px;
+        padding:13px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;
+      ">✨ Загрузить текст</button>
+      <button onclick="loadDefaultGospel()" style="
+        background:var(--card);color:var(--muted);
+        border:1px solid var(--border);border-radius:12px;
+        padding:13px 14px;font-size:13px;cursor:pointer;font-family:inherit;
+        white-space:nowrap;
+      ">📖 Пример</button>
+    </div>
+  </div>
+
+  <!-- ACTIVE SESSION BLOCK (hidden until text loaded) -->
+  <div id="gospel-session-block" style="display:none;flex-direction:column;gap:14px">
+
+    <!-- Stats bar -->
+    <div class="gospel-hero" id="gospel-hero-bar">
+      <div class="gospel-title" id="g-chapter-label">📖 Евангелие</div>
+      <div class="gospel-subtitle" id="g-title-label">Отрывок</div>
+      <div class="gospel-stats">
+        <div class="gospel-stat">
+          <div class="gospel-stat-val" id="g-done">0</div>
+          <div class="gospel-stat-lbl">прочитано</div>
+        </div>
+        <div class="gospel-stat">
+          <div class="gospel-stat-val" id="g-total">0</div>
+          <div class="gospel-stat-lbl">предложений</div>
+        </div>
+        <div class="gospel-stat">
+          <div class="gospel-stat-val" id="g-pct">0%</div>
+          <div class="gospel-stat-lbl">готово</div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="bar-track">
+          <div class="bar-fill" id="g-progress-bar" style="width:0%;background:var(--amber)"></div>
+        </div>
+      </div>
+      <button onclick="changeGospelText()" style="
+        margin-top:12px;background:transparent;
+        color:var(--muted);border:1px solid var(--border);
+        border-radius:8px;padding:6px 14px;font-size:12px;
+        cursor:pointer;font-family:inherit;
+      ">✏️ Изменить текст</button>
+    </div>
+
+    <!-- Done banner -->
+    <div class="gospel-done-banner" id="gospel-done-banner">
+
+      <!-- Step 1: Completion celebration -->
+      <div id="g-step-done">
+        <div style="font-size:52px">🕊️</div>
+        <div style="font-size:21px;font-weight:900;color:var(--lime);margin-top:10px">
+          Весь отрывок прочитан!
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.7" id="g-last-sentence"></div>
+        <div style="margin-top:20px;padding:16px;background:rgba(110,232,107,0.07);border-radius:14px;border:1px solid rgba(110,232,107,0.2)">
+          <div style="font-size:11px;color:var(--lime);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">
+            Твоё ключевое слово:
+          </div>
+          <div id="g-keyword" style="
+            font-size:32px;font-weight:900;color:var(--amber);
+            letter-spacing:2px;text-transform:uppercase;
+            text-shadow:0 0 20px rgba(255,184,48,0.5);
+            font-family:Georgia,serif;
+          ">—</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">
+            Запомни это слово!
+          </div>
+        </div>
+        <button onclick="callMom()" style="
+          margin-top:18px;width:100%;
+          background:linear-gradient(135deg,#1a7a3a,#2ECC71);
+          color:#fff;border:none;border-radius:16px;
+          padding:16px;font-size:17px;font-weight:800;
+          cursor:pointer;font-family:inherit;
+          box-shadow:0 4px 20px rgba(46,204,113,0.4);
+          display:flex;align-items:center;justify-content:center;gap:10px;
+        ">
+          📞 Позвонить маме!
+        </button>
+        <button onclick="showMomSettings()" style="
+          margin-top:8px;width:100%;background:transparent;
+          color:var(--muted);border:1px solid var(--border);
+          border-radius:10px;padding:8px;font-size:12px;
+          cursor:pointer;font-family:inherit;
+        " id="mom-phone-hint">⚙️ Номер мамы не задан</button>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <button class="btn-lime" onclick="resetGospel()" style="flex:1;padding:12px;font-size:14px">🔄 Снова</button>
+          <button onclick="changeGospelText()" style="
+            flex:1;background:var(--card);color:var(--text);border:1px solid var(--border);
+            border-radius:12px;padding:12px;font-size:14px;cursor:pointer;font-family:inherit;
+          ">📋 Новый</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Call screen -->
+      <div id="g-step-call" style="display:none">
+        <div style="font-size:52px;animation:phonePulse 1s ease-in-out infinite alternate">📞</div>
+        <div style="font-size:19px;font-weight:800;color:var(--text);margin-top:12px">
+          Позвони маме!
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.6">
+          Когда она возьмёт трубку — скажи ей ключевое слово:
+        </div>
+
+        <div style="
+          margin:18px 0;padding:20px 16px;
+          background:rgba(255,184,48,0.1);
+          border:2px solid var(--amber);
+          border-radius:16px;
+        ">
+          <div style="font-size:12px;color:var(--amber);font-weight:700;letter-spacing:1px;margin-bottom:6px">КЛЮЧЕВОЕ СЛОВО</div>
+          <div id="g-keyword-call" style="
+            font-size:36px;font-weight:900;color:var(--amber);
+            letter-spacing:3px;text-transform:uppercase;
+            font-family:Georgia,serif;
+          ">—</div>
+        </div>
+
+        <div style="
+          background:var(--surface);border-radius:14px;
+          padding:14px;font-size:13px;color:var(--text);
+          line-height:1.7;text-align:left;border:1px solid var(--border);
+          margin-bottom:18px;
+        ">
+          <div style="color:var(--violet);font-weight:700;margin-bottom:6px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px">Что сказать маме:</div>
+          «Мама, я прочитал весь отрывок из Евангелия!
+          Моё слово сегодня — <b id="g-keyword-speech">…</b>.
+          Я заработал поощрение!»
+        </div>
+
+        <button onclick="showRewardStep()" style="
+          width:100%;background:linear-gradient(135deg,var(--violet),#5A3FD0);
+          color:#fff;border:none;border-radius:16px;
+          padding:15px;font-size:16px;font-weight:800;
+          cursor:pointer;font-family:inherit;
+          box-shadow:0 4px 20px rgba(124,92,252,0.4);
+        ">
+          🎁 Мама сказала «Молодец!»
+        </button>
+        <button onclick="showDoneStep()" style="
+          margin-top:10px;background:transparent;color:var(--muted);
+          border:none;font-size:13px;cursor:pointer;font-family:inherit;
+          text-decoration:underline;
+        ">← Назад</button>
+      </div>
+
+      <!-- Step 3: Reward celebration -->
+      <div id="g-step-reward" style="display:none">
+        <div style="font-size:60px;animation:bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1)">🎉</div>
+        <div style="font-size:22px;font-weight:900;color:var(--lime);margin-top:10px">
+          Ты молодец!
+        </div>
+        <div style="font-size:14px;color:var(--muted);margin-top:6px;line-height:1.6">
+          Мама знает твоё слово и придумает тебе подарок.<br>
+          Ты это заслужил!
+        </div>
+
+        <div style="
+          margin:18px 0;display:flex;flex-direction:column;gap:10px;
+          text-align:left;
+        ">
+          <div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">
+            Возможные поощрения:
+          </div>
+          <div class="reward-option">🍦 Мороженое</div>
+          <div class="reward-option">📱 +30 минут в телефоне</div>
+          <div class="reward-option">🎮 Дополнительная игра</div>
+          <div class="reward-option">🍕 Любимое блюдо на ужин</div>
+          <div class="reward-option">🛍️ Небольшой подарок</div>
+        </div>
+
+        <div style="
+          background:rgba(255,184,48,0.08);border:1px solid rgba(255,184,48,0.2);
+          border-radius:12px;padding:12px;font-size:12px;
+          color:var(--amber);margin-bottom:16px;line-height:1.6;
+        ">
+          ⭐ Сегодня ты прочитал всё до конца.<br>
+          Слово было: <b id="g-keyword-final">…</b>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-direction:column">
+          <button class="btn-lime" onclick="resetGospel()" style="width:100%;padding:14px">
+            🔄 Читать снова
+          </button>
+          <button onclick="changeGospelText()" style="
+            background:var(--card);color:var(--text);border:1px solid var(--border);
+            border-radius:14px;padding:12px;font-size:14px;cursor:pointer;font-family:inherit;width:100%
+          ">📋 Новый отрывок</button>
+          <button class="btn-secondary" onclick="showScreen('home')">🏠 На главную</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sentences list -->
+    <div id="gospel-sentences" style="display:flex;flex-direction:column;gap:10px;padding-bottom:160px"></div>
+
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- MOM SETTINGS MODAL -->
+<div id="mom-modal" style="
+  position:fixed;inset:0;background:rgba(0,0,0,0.88);
+  display:none;align-items:flex-end;justify-content:center;
+  z-index:300;
+">
+  <div style="
+    width:100%;max-width:430px;
+    background:var(--surface);
+    border-top:1px solid var(--border);
+    border-radius:20px 20px 0 0;
+    padding:24px 20px 40px;
+  ">
+    <div style="font-size:17px;font-weight:800;margin-bottom:4px">📞 Номер мамы</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:18px">
+      Введи номер — он хранится только на этом устройстве
+    </div>
+    <input id="mom-phone-input" type="tel" placeholder="+7 921 363 39 86"
+      style="
+        width:100%;background:var(--card);border:1px solid var(--border);
+        border-radius:12px;padding:14px 16px;color:var(--text);
+        font-size:20px;letter-spacing:2px;font-family:inherit;
+        outline:none;margin-bottom:14px;
+      "
+      oninput="this.style.borderColor=this.value.trim()?'var(--amber)':'var(--border)'"
+    />
+    <div style="display:flex;gap:10px">
+      <button onclick="saveMomPhone()" style="
+        flex:1;background:linear-gradient(135deg,var(--amber),#C48A00);
+        color:#0A0800;border:none;border-radius:12px;
+        padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;
+      ">💾 Сохранить</button>
+      <button onclick="closeMomModal()" style="
+        background:var(--card);color:var(--muted);border:1px solid var(--border);
+        border-radius:12px;padding:14px 18px;cursor:pointer;font-family:inherit;
+      ">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- READING PANEL (fixed bottom) -->
+<div class="reading-panel" id="reading-panel">
+  <div class="reading-panel-verse" id="rp-verse">Стих 22</div>
+  <div class="reading-panel-text" id="rp-text">Текст стиха</div>
+  <div class="reading-panel-controls">
+    <button class="reading-mic-btn" id="rp-mic-btn" onclick="toggleReading()">🎙️</button>
+    <div class="reading-feedback" id="rp-feedback">Нажми микрофон и прочитай стих вслух</div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-ghost" onclick="skipSentence()">Пропустить →</button>
+    <button class="btn-ghost" onclick="closeReadingPanel()">✕ Закрыть</button>
+  </div>
+</div>
+<div id="overlay" class="overlay">
+  <div class="reward-popup">
+    <div class="reward-emoji">✨</div>
+    <div class="reward-coins" id="overlay-coins">+120 монет!</div>
+    <div class="reward-xp" id="overlay-xp">+30 XP</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+const state = {
+  coins: 320,
+  xp: 45,
+  completed: 0,
+  speechScore: 62,
+  grammarScore: 55,
+};
+
+const questState = {
+  tasks: [],
+  idx: 0,
+  earned: 0,
+};
+
+// ══════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════
+const SPEECH_TASKS = [
+  {
+    id:"s1", type:"speech", sound:"Р",
+    prompt:"Произнеси заклинание чётко:",
+    phrase:"Три дровосека рубили дрова",
+    hint:"Следи за звуком Р — он должен звенеть как гром!",
+    reward:120, xp:30,
+  },
+  {
+    id:"s2", type:"speech", sound:"Ш",
+    prompt:"Скажи пароль к сундуку:",
+    phrase:"Шесть мышат в камышах шуршат",
+    hint:"Звук Ш — как тихий ветер в листве.",
+    reward:150, xp:40,
+  },
+  {
+    id:"s3", type:"speech", sound:"Л",
+    prompt:"Произнеси боевой клич воина:",
+    phrase:"Полкило колбасы и половина лимона",
+    hint:"Язык касается верхних зубов на звуке Л.",
+    reward:100, xp:25,
+  },
+  {
+    id:"s4", type:"speech", sound:"С/З",
+    prompt:"Шёпот духов леса:",
+    phrase:"У Сени и Зины зайки и осины",
+    hint:"С — холодный воздух, З — звонкий звон.",
+    reward:130, xp:35,
+  },
+  {
+    id:"s5", type:"speech", sound:"Ч/Щ",
+    prompt:"Заклинание чародея:",
+    phrase:"Чаща чащи чаще ищет тащит",
+    hint:"Ч и Щ — братья-шипящие, язык выше!",
+    reward:140, xp:38,
+  },
+];
+
+const GRAMMAR_TASKS = [
+  {
+    id:"g1", type:"grammar", category:"Падежи",
+    prompt:"Выбери правильное слово:",
+    sentence:"Рыцарь скачет на ___ в бой",
+    options:["конь","коне","коня","коню"],
+    correct:1,
+    explain:"Предложный падеж: на чём? — на конЕ. Запомни: НА, В, О — предложный!",
+    reward:100, xp:25,
+  },
+  {
+    id:"g2", type:"grammar", category:"Глаголы",
+    prompt:"Открой ворота замка — вставь глагол:",
+    sentence:"Дракон ___ огнём и скрылся в горах",
+    options:["дышит","дышал","дышала","дышали"],
+    correct:1,
+    explain:"Прошедшее время, мужской род: дышАЛ. Дракон — он, мужской род.",
+    reward:90, xp:20,
+  },
+  {
+    id:"g3", type:"grammar", category:"Предлоги",
+    prompt:"Где спрятан артефакт силы?",
+    sentence:"Артефакт лежит ___ старым дубом",
+    options:["под","в","за","из-за"],
+    correct:0,
+    explain:"ПОД + творительный падеж = под чем? → под дубом. Артефакт ниже дуба.",
+    reward:110, xp:28,
+  },
+  {
+    id:"g4", type:"grammar", category:"Согласование",
+    prompt:"Запиши заклинание правильно:",
+    sentence:"Три ___ воина охраняют башню",
+    options:["смелый","смелых","смелые","смелого"],
+    correct:1,
+    explain:"После числа 3 — родительный падеж мн. числа: три кого/чего? — смелЫХ воинов.",
+    reward:120, xp:32,
+  },
+  {
+    id:"g5", type:"grammar", category:"Окончания",
+    prompt:"Маг колдует — выбери окончание:",
+    sentence:"Маг жил в высок___ башне",
+    options:["ой","ей","ий","ый"],
+    correct:0,
+    explain:"Прилагательное согласуется: в башне (ж.р., предл. пад.) → высокОЙ.",
+    reward:95, xp:22,
+  },
+  {
+    id:"g6", type:"grammar", category:"НЕ с глаголами",
+    prompt:"Правило пишется отдельно?",
+    sentence:"Герой ___ хотел сдаваться врагам",
+    options:["не","ни","нет","без"],
+    correct:0,
+    explain:"НЕ с глаголами пишется РАЗДЕЛЬНО: не хотел, не бежал, не спал.",
+    reward:105, xp:26,
+  },
+];
+
+const WORLDS = [
+  { id:1, icon:"🌲", name:"Лес Шёпотов",   tasks:["s1","g1","s2","g2"], minDone:0 },
+  { id:2, icon:"🗼", name:"Башня Теней",   tasks:["g3","s3","g4","s4"], minDone:3 },
+  { id:3, icon:"⛰️", name:"Горы Эха",     tasks:["s5","g5","s1","g6"], minDone:6 },
+  { id:4, icon:"🏰", name:"Замок Короля",  tasks:["g1","s2","g4","s4","g6"], minDone:10 },
+];
+
+const ALL_TASKS = [...SPEECH_TASKS, ...GRAMMAR_TASKS];
+function getTask(id) { return ALL_TASKS.find(t => t.id === id); }
+
+// ══════════════════════════════════════════════════════
+// SCREEN ROUTING
+// ══════════════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const scr = document.getElementById('screen-' + name);
+  if (scr) scr.classList.add('active');
+  window.scrollTo(0,0);
+  if (name === 'home') refreshHome();
+  if (name === 'map') renderMap();
+  if (name === 'gospel') showScreen_gospel();
+}
+
+// ══════════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════════
+function refreshHome() {
+  const level = Math.floor(state.xp / 100) + 1;
+  const xpInLevel = state.xp % 100;
+  document.getElementById('home-coins').textContent = state.coins;
+  document.getElementById('coins-display').textContent = state.coins;
+  document.getElementById('home-completed').textContent = state.completed;
+  document.getElementById('hero-level').textContent = `Уровень ${level} · Квестор речи`;
+  document.getElementById('xp-label').textContent = `${state.xp} / ${level*100} XP`;
+  document.getElementById('xp-bar').style.width = xpInLevel + '%';
+  document.getElementById('speech-bar').style.width = state.speechScore + '%';
+  document.getElementById('grammar-bar').style.width = state.grammarScore + '%';
+  document.getElementById('speech-pct').textContent = state.speechScore + '%';
+  document.getElementById('grammar-pct').textContent = state.grammarScore + '%';
+}
+
+// ══════════════════════════════════════════════════════
+// MAP
+// ══════════════════════════════════════════════════════
+function renderMap() {
+  const el = document.getElementById('zones-list');
+  el.innerHTML = '';
+  WORLDS.forEach(w => {
+    const unlocked = state.completed >= w.minDone;
+    const div = document.createElement('div');
+    div.className = 'zone-card' + (unlocked ? '' : ' locked');
+    div.style.marginBottom = '12px';
+    div.innerHTML = `
+      <div class="zone-icon">${w.icon}</div>
+      <div style="flex:1">
+        <div class="zone-name">${w.name}</div>
+        <div class="zone-sub">${w.tasks.length} заданий</div>
+        ${!unlocked ? `<div style="font-size:11px;color:var(--coral);margin-top:3px">🔒 Выполни ещё ${w.minDone - state.completed} задания</div>` : ''}
+      </div>
+      ${unlocked ? '<div class="zone-arrow">→</div>' : ''}
+    `;
+    if (unlocked) {
+      div.onclick = () => startZoneQuest(w.tasks);
+    }
+    el.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// QUEST START
+// ══════════════════════════════════════════════════════
+function startRandomQuest() {
+  const sp = shuffle([...SPEECH_TASKS]).slice(0, 2);
+  const gr = shuffle([...GRAMMAR_TASKS]).slice(0, 2);
+  const mixed = shuffle([...sp, ...gr]);
+  startQuest(mixed);
+}
+
+function startZoneQuest(ids) {
+  const tasks = ids.map(id => getTask(id)).filter(Boolean);
+  startQuest(tasks);
+}
+
+function startQuest(tasks) {
+  questState.tasks = tasks;
+  questState.idx = 0;
+  questState.earned = 0;
+  showScreen('quest');
+  renderCurrentTask();
+}
+
+function confirmStop() {
+  if (confirm('Выйти из квеста? Прогресс этого задания не сохранится.')) {
+    showScreen('home');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// QUEST RENDER
+// ══════════════════════════════════════════════════════
+function renderCurrentTask() {
+  const { tasks, idx } = questState;
+  const task = tasks[idx];
+  const pct = Math.round((idx / tasks.length) * 100);
+
+  document.getElementById('quest-step').textContent = `Задание ${idx+1} из ${tasks.length}`;
+  document.getElementById('quest-progress-bar').style.width = pct + '%';
+
+  const messages = {
+    speech: [
+      "Произнеси фразу чётко — открой путь вперёд!",
+      "Голос — твоё оружие. Произнеси ясно!",
+      "Слова — это заклинания. Читай громко и чисто!",
+      "Звук должен быть точным, как стрела лучника!",
+    ],
+    grammar: [
+      "Знание грамматики — это магия! Выбери верное слово.",
+      "Только грамотный герой откроет эту дверь!",
+      "Язык — твой щит и меч. Используй его правильно!",
+      "Ошибка в заклинании — и магия не сработает!",
+    ],
+  };
+  const msgs = messages[task.type];
+  document.getElementById('questor-text').textContent = msgs[idx % msgs.length];
+
+  if (task.type === 'speech') renderSpeechTask(task);
+  else renderGrammarTask(task);
+}
+
+// ══════════════════════════════════════════════════════
+// SPEECH TASK
+// ══════════════════════════════════════════════════════
+let micState = 'idle'; // idle | recording | done | fail
+let recognition = null;
+let simTimer = null;
+
+function renderSpeechTask(task) {
+  micState = 'idle';
+  const html = `
+    <div class="card" style="text-align:center">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <span class="badge" style="background:rgba(255,184,48,0.12);color:var(--amber);border:1px solid rgba(255,184,48,0.25)">🎙️ РЕЧЬ</span>
+        <span class="badge" style="background:rgba(77,200,255,0.12);color:var(--sky);border:1px solid rgba(77,200,255,0.25)">ЗВУК ${task.sound}</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px">${task.prompt}</div>
+      <div class="phrase-box">«${task.phrase}»</div>
+      <div class="hint-text">💡 ${task.hint}</div>
+    </div>
+
+    <div class="mic-area">
+      <div class="mic-wrapper" id="mic-wrapper">
+        <div class="mic-ring r1"></div>
+        <div class="mic-ring r2"></div>
+        <button class="mic-btn" id="mic-btn" onclick="handleMicClick('${task.id}')">🎙️</button>
+      </div>
+      <div class="mic-hint" id="mic-hint">Нажми и произнеси фразу</div>
+    </div>
+
+    <div id="speech-result"></div>
+    <div style="text-align:center;margin-top:4px">
+      <button class="btn-ghost" onclick="skipTask()">Пропустить задание</button>
+    </div>
+  `;
+  document.getElementById('task-container').innerHTML = html;
+}
+
+function handleMicClick(taskId) {
+  if (micState === 'recording') return;
+  micState = 'recording';
+
+  const btn = document.getElementById('mic-btn');
+  const wrapper = document.getElementById('mic-wrapper');
+  const hint = document.getElementById('mic-hint');
+  btn.classList.add('active');
+  btn.textContent = '🔴';
+  wrapper.classList.add('listening');
+  hint.textContent = 'Слушаю... произноси!';
+  document.getElementById('speech-result').innerHTML = `
+    <div class="transcript-card">
+      <div class="transcript-label">Распознаю...</div>
+      <div class="transcript-text" id="live-transcript">...</div>
+    </div>
+  `;
+
+  const hasSTT = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  if (hasSTT) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.lang = 'ru-RU';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.onresult = (e) => {
+      const t = Array.from(e.results).map(r => r[0].transcript).join('');
+      const el = document.getElementById('live-transcript');
+      if (el) el.textContent = '«' + t + '»';
+    };
+    recognition.onend = () => finishSpeech(taskId, true);
+    recognition.onerror = () => finishSpeech(taskId, false);
+    recognition.start();
+    // Auto-stop after 5s
+    simTimer = setTimeout(() => { try { recognition.stop(); } catch(e){} }, 5000);
+  } else {
+    // Simulate for demo
+    const task = getTask(taskId);
+    simTimer = setTimeout(() => {
+      const good = Math.random() > 0.25;
+      const el = document.getElementById('live-transcript');
+      if (el) el.textContent = '«' + (good ? task.phrase : task.phrase.replace(/р/gi,'л')) + '»';
+      setTimeout(() => finishSpeech(taskId, good), 600);
+    }, 2200);
+  }
+}
+
+function finishSpeech(taskId, success) {
+  clearTimeout(simTimer);
+  micState = success ? 'done' : 'fail';
+  const btn = document.getElementById('mic-btn');
+  const wrapper = document.getElementById('mic-wrapper');
+  if (btn) { btn.classList.remove('active'); btn.textContent = '✅'; }
+  if (wrapper) wrapper.classList.remove('listening');
+
+  const score = success
+    ? Math.floor(68 + Math.random() * 32)
+    : Math.floor(28 + Math.random() * 28);
+
+  const task = getTask(taskId);
+  const res = document.getElementById('speech-result');
+
+  // Score bar
+  const scoreHTML = `
+    <div class="score-row">
+      <span style="font-size:11px;color:var(--muted)">Чистота произношения</span>
+      <span style="font-size:12px;font-weight:700;color:${score>=60?'var(--lime)':'var(--coral)'}">${score}%</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:${score}%;background:${score>=60?'var(--lime)':'var(--coral)'}"></div></div>
+  `;
+
+  if (score >= 60) {
+    res.innerHTML = `
+      <div class="result-ok">
+        <div class="result-emoji">🎉</div>
+        <div class="result-title" style="color:var(--lime)">Отлично!</div>
+        ${scoreHTML}
+        <div style="color:var(--muted);font-size:12px;margin:8px 0">+${task.reward} монет · +${task.xp} XP</div>
+        <button class="btn-lime" onclick="completeTask('${taskId}')">Забрать награду →</button>
+      </div>
+    `;
+  } else {
+    res.innerHTML = `
+      <div class="result-fail">
+        <div class="result-emoji">💪</div>
+        <div class="result-title" style="color:var(--coral)">Ещё раз!</div>
+        <div class="result-sub">Прочитай подсказку и попробуй снова</div>
+        ${scoreHTML}
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn-primary" style="width:auto;padding:10px 20px" onclick="retryTask('${taskId}')">🔄 Повторить</button>
+          <button class="btn-secondary" style="width:auto;padding:10px 18px" onclick="skipTask()">Пропустить</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function retryTask(taskId) {
+  const task = getTask(taskId);
+  renderSpeechTask(task);
+}
+
+// ══════════════════════════════════════════════════════
+// GRAMMAR TASK
+// ══════════════════════════════════════════════════════
+function renderGrammarTask(task) {
+  const letters = ['А','Б','В','Г'];
+  const optionsHTML = task.options.map((opt, i) => `
+    <button class="option-btn" id="opt-${i}" onclick="selectOption('${task.id}', ${i})">
+      <span class="option-letter">${letters[i]}.</span>
+      ${opt}
+    </button>
+  `).join('');
+
+  const html = `
+    <div class="card" style="text-align:center">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <span class="badge" style="background:rgba(110,232,107,0.12);color:var(--lime);border:1px solid rgba(110,232,107,0.25)">📖 ГРАММАТИКА</span>
+        <span class="badge" style="background:rgba(77,200,255,0.12);color:var(--sky);border:1px solid rgba(77,200,255,0.25)">${task.category}</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">${task.prompt}</div>
+      <div style="font-size:20px;font-weight:700;line-height:1.6">${task.sentence}</div>
+    </div>
+
+    <div class="options-list">${optionsHTML}</div>
+
+    <div id="grammar-result"></div>
+  `;
+  document.getElementById('task-container').innerHTML = html;
+}
+
+function selectOption(taskId, chosen) {
+  const task = getTask(taskId);
+  const letters = ['А','Б','В','Г'];
+
+  // Disable all
+  task.options.forEach((_, i) => {
+    const btn = document.getElementById('opt-'+i);
+    btn.disabled = true;
+    if (i === task.correct) btn.classList.add('correct');
+    else if (i === chosen && i !== task.correct) btn.classList.add('wrong');
+  });
+
+  const correct = chosen === task.correct;
+  const res = document.getElementById('grammar-result');
+
+  if (correct) {
+    res.innerHTML = `
+      <div class="result-ok">
+        <div class="result-emoji">🏆</div>
+        <div class="result-title" style="color:var(--lime)">Верно!</div>
+        <div class="result-explain">${task.explain}</div>
+        <div style="color:var(--muted);font-size:12px;margin-bottom:12px">+${task.reward} монет · +${task.xp} XP</div>
+        <button class="btn-lime" onclick="completeTask('${taskId}')">Продолжить →</button>
+      </div>
+    `;
+  } else {
+    res.innerHTML = `
+      <div class="result-fail">
+        <div class="result-emoji">🔍</div>
+        <div class="result-title" style="color:var(--coral)">Не совсем верно</div>
+        <div class="result-explain">${task.explain}</div>
+        <div class="btn-row">
+          <button class="btn-primary" style="width:auto;padding:10px 20px" onclick="retryGrammar('${taskId}')">🔄 Ещё раз</button>
+          <button class="btn-secondary" style="width:auto;padding:10px 18px" onclick="skipTask()">Далее</button>
+        </div>
+      </div>
+    `;
+  }
+  res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function retryGrammar(taskId) {
+  const task = getTask(taskId);
+  renderGrammarTask(task);
+}
+
+// ══════════════════════════════════════════════════════
+// TASK FLOW
+// ══════════════════════════════════════════════════════
+function completeTask(taskId) {
+  const task = getTask(taskId);
+  questState.earned++;
+
+  // Update state
+  state.coins += task.reward;
+  state.xp += task.xp;
+  state.completed++;
+  if (task.type === 'speech') state.speechScore = Math.min(100, state.speechScore + 3);
+  else state.grammarScore = Math.min(100, state.grammarScore + 3);
+  document.getElementById('coins-display').textContent = state.coins;
+
+  // Show reward overlay
+  const ov = document.getElementById('overlay');
+  document.getElementById('overlay-coins').textContent = '+' + task.reward + ' монет!';
+  document.getElementById('overlay-xp').textContent = '+' + task.xp + ' XP';
+  ov.classList.add('show');
+  setTimeout(() => {
+    ov.classList.remove('show');
+    nextTask();
+  }, 1400);
+}
+
+function skipTask() {
+  nextTask();
+}
+
+function nextTask() {
+  questState.idx++;
+  if (questState.idx >= questState.tasks.length) {
+    endQuest();
+  } else {
+    renderCurrentTask();
+    window.scrollTo(0,0);
+  }
+}
+
+function endQuest() {
+  document.getElementById('end-sub').textContent =
+    `Выполнено заданий: ${questState.earned} из ${questState.tasks.length}`;
+  showScreen('end');
+}
+
+// ══════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+
+// ══════════════════════════════════════════════════════
+// GOSPEL — DYNAMIC READING MODE
+// ══════════════════════════════════════════════════════
+
+const DEFAULT_GOSPEL_TEXT = `22Светильник для тела есть oko. Итак, если oko твоё будет чисто, то всё тело твоё будет светло; 23если же oko твоё будет худо, то всё тело твоё будет темно. Итак, если свет, который в тебе, — тьма, то какова же тьма?
+24Никто не может служить двум господам: ибо или одного будет ненавидеть, а другого любить; или одному станет усердствовать, а о другом нерадеть. Не можете служить Богу и маммоне.
+25Посему говорю вам: не заботьтесь для души вашей, что вам есть и что пить, ни для тела вашего, во что одеться. Душа не больше ли пищи, и тело одежды?
+26Взгляните на птиц небесных: они ни сеют, ни жнут, ни собирают в житницы; и Отец ваш Небесный питает их. Вы не гораздо ли лучше их?
+27Да и кто из вас, заботясь, может прибавить себе росту хотя на один локоть?
+28И об одежде что заботитесь? Посмотрите на полевые лилии, как они растут: ни трудятся, ни прядут; 29но говорю вам, что и Соломон во всей славе своей не одевался так, как всякая из них; 30если же траву полевую, которая сегодня есть, а завтра будет брошена в печь, Бог так одевает, кольми паче вас, маловеры!
+31Итак не заботьтесь и не говорите: что нам есть? или что пить? или во что одеться?
+32потому что всего этого ищут язычники, и потому что Отец ваш Небесный знает, что вы имеете нужду во всём этом.
+33Ищите же прежде Царства Божия и правды Его, и это всё приложится вам.`;
+
+let GOSPEL_VERSES = [];
+
+const gospelState = {
+  done: new Set(),
+  activeIdx: null,
+  isListening: false,
+  recognition: null,
+  simTimer: null,
+};
+
+// ── TEXT PARSING ─────────────────────────────────────
+
+function parseGospelText(raw) {
+  const text = raw.trim();
+  if (!text) return [];
+  const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const sentences = [];
+  for (const line of lines) {
+    // Split line on inline verse numbers like "22Text 23Text"
+    // Pattern: digit(s) followed immediately by a Cyrillic/Latin letter
+    const segmented = line.split(/(?=\d+[А-ЯЁA-Zа-яёa-z])/);
+    for (const seg of segmented) {
+      if (!seg.trim()) continue;
+      const verseMatch = seg.match(/^(\d+)([\s\S]*)/);
+      const verseNum = verseMatch ? verseMatch[1] : '';
+      const restSeg = verseMatch ? verseMatch[2].trim() : seg.trim();
+      // Now split restSeg into sentences on . ! ?
+      const parts = splitIntoSentences(restSeg);
+      parts.forEach((part, pi) => {
+        const t = part.trim();
+        if (t.length < 4) return;
+        sentences.push({ verse: pi === 0 && verseNum ? verseNum : '', text: t });
+      });
+    }
+  }
+  return sentences.filter(s => s.text.length >= 4);
+}
+
+function splitIntoSentences(text) {
+  // Split after sentence-ending punctuation followed by space + uppercase
+  // Using a simple loop to avoid lookbehind issues on all browsers
+  const results = [];
+  let current = '';
+  const chars = text.split('');
+  for (let i = 0; i < chars.length; i++) {
+    current += chars[i];
+    const ch = chars[i];
+    if (('.!?').includes(ch) || (ch === ';' && i < chars.length - 1)) {
+      // Look ahead: if next non-space char is uppercase Cyrillic/Latin — split
+      let j = i + 1;
+      while (j < chars.length && chars[j] === ' ') j++;
+      if (j >= chars.length) {
+        results.push(current.trim());
+        current = '';
+      } else {
+        const nextCh = chars[j];
+        if (/[А-ЯЁA-Z«]/.test(nextCh)) {
+          results.push(current.trim());
+          current = '';
+        }
+      }
+    }
+  }
+  if (current.trim()) results.push(current.trim());
+  return results.length ? results : [text];
+}
+
+// ── LOAD / INIT ──────────────────────────────────────
+
+function loadGospelText() {
+  const ta = document.getElementById('gospel-textarea');
+  const raw = ta.value.trim();
+  if (!raw) { ta.style.borderColor = 'var(--coral)'; return; }
+  const parsed = parseGospelText(raw);
+  if (parsed.length === 0) { ta.style.borderColor = 'var(--coral)'; return; }
+  GOSPEL_VERSES = parsed;
+  gospelState.done.clear();
+  gospelState.activeIdx = null;
+  const firstLine = raw.split('\n')[0].trim();
+  document.getElementById('g-title-label').textContent =
+    firstLine.length > 55 ? firstLine.slice(0, 55) + '…' : firstLine;
+  showGospelSession();
+}
+
+function loadDefaultGospel() {
+  const ta = document.getElementById('gospel-textarea');
+  ta.value = DEFAULT_GOSPEL_TEXT;
+  ta.style.borderColor = 'var(--amber)';
+}
+
+function changeGospelText() {
+  closeReadingPanel();
+  document.getElementById('gospel-session-block').style.display = 'none';
+  document.getElementById('gospel-input-block').style.display = 'block';
+  document.getElementById('gospel-done-banner').classList.remove('show');
+}
+
+function showGospelSession() {
+  document.getElementById('gospel-input-block').style.display = 'none';
+  const sb = document.getElementById('gospel-session-block');
+  sb.style.display = 'flex';
+  sb.style.flexDirection = 'column';
+  sb.style.gap = '14px';
+  renderGospelSentences();
+  updateGospelStats();
+}
+
+function showScreen_gospel() {
+  if (GOSPEL_VERSES.length === 0) {
+    document.getElementById('gospel-input-block').style.display = 'block';
+    document.getElementById('gospel-session-block').style.display = 'none';
+  }
+}
+
+// ── RENDER ───────────────────────────────────────────
+
+function renderGospelSentences() {
+  const container = document.getElementById('gospel-sentences');
+  container.innerHTML = '';
+  GOSPEL_VERSES.forEach((v, i) => {
+    const isDone = gospelState.done.has(i);
+    const div = document.createElement('div');
+    div.className = 'sentence-item' + (isDone ? ' done' : '');
+    div.id = 'verse-item-' + i;
+    if (!isDone) div.onclick = () => openVerse(i);
+    div.innerHTML =
+      (v.verse ? '<div class="sentence-verse">Стих ' + v.verse + '</div>' : '<div class="sentence-verse">— ' + (i+1) + '</div>') +
+      '<div class="sentence-text">' + v.text + '</div>' +
+      '<div class="sentence-status">' + (isDone ? '✅' : '🎙️') + '</div>';
+    container.appendChild(div);
+  });
+}
+
+function updateGospelStats() {
+  const done = gospelState.done.size;
+  const total = GOSPEL_VERSES.length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('g-done').textContent = done;
+  document.getElementById('g-total').textContent = total;
+  document.getElementById('g-pct').textContent = pct + '%';
+  document.getElementById('g-progress-bar').style.width = pct + '%';
+  const banner = document.getElementById('gospel-done-banner');
+  const list = document.getElementById('gospel-sentences');
+  if (total > 0 && done === total) {
+    const last = GOSPEL_VERSES[GOSPEL_VERSES.length - 1];
+    const lbl = document.getElementById('g-last-sentence');
+    if (lbl) lbl.textContent = '«' + last.text + '»';
+
+    // Extract and display keyword
+    const keyword = extractKeyword(GOSPEL_VERSES);
+    ['g-keyword','g-keyword-call','g-keyword-speech','g-keyword-final'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = keyword;
+    });
+
+    showDoneStep();
+    banner.classList.add('show');
+    list.style.display = 'none';
+    document.getElementById('reading-panel').classList.remove('show');
+  } else {
+    banner.classList.remove('show');
+    list.style.display = 'flex';
+  }
+}
+
+// ── READING ──────────────────────────────────────────
+
+function openVerse(idx) {
+  if (gospelState.done.has(idx)) return;
+  gospelState.activeIdx = idx;
+  const v = GOSPEL_VERSES[idx];
+  document.querySelectorAll('.sentence-item').forEach(el => el.classList.remove('active-reading','error-reading'));
+  const item = document.getElementById('verse-item-' + idx);
+  item.classList.add('active-reading');
+  item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('rp-verse').textContent = v.verse ? 'Стих ' + v.verse : 'Предложение ' + (idx+1);
+  document.getElementById('rp-text').textContent = v.text;
+  setFeedback('neutral', 'Нажми микрофон и прочитай вслух');
+  resetMicBtn();
+  document.getElementById('reading-panel').classList.add('show');
+}
+
+function setFeedback(type, text) {
+  const el = document.getElementById('rp-feedback');
+  el.className = 'reading-feedback' + (type==='ok'?' ok':type==='err'?' err':'');
+  el.textContent = text;
+}
+
+function resetMicBtn() {
+  const btn = document.getElementById('rp-mic-btn');
+  btn.classList.remove('listening');
+  btn.textContent = '🎙️';
+}
+
+function toggleReading() {
+  if (gospelState.isListening) stopReading(); else startReading();
+}
+
+function startReading() {
+  if (gospelState.activeIdx === null) return;
+  gospelState.isListening = true;
+  document.getElementById('rp-mic-btn').classList.add('listening');
+  document.getElementById('rp-mic-btn').textContent = '🔴';
+  setFeedback('neutral', 'Слушаю… читай вслух!');
+  const hasSTT = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  if (hasSTT) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    gospelState.recognition = new SR();
+    gospelState.recognition.lang = 'ru-RU';
+    gospelState.recognition.continuous = false;
+    gospelState.recognition.interimResults = true;
+    gospelState.recognition.onresult = (e) => {
+      const t = Array.from(e.results).map(r => r[0].transcript).join('');
+      setFeedback('neutral', '«' + t + '»');
+    };
+    gospelState.recognition.onend = () => evaluateReading();
+    gospelState.recognition.onerror = () => simulateReading();
+    gospelState.recognition.start();
+    gospelState.simTimer = setTimeout(() => { try { gospelState.recognition.stop(); } catch(e) {} }, 9000);
+  } else {
+    simulateReading();
+  }
+}
+
+function stopReading() {
+  clearTimeout(gospelState.simTimer);
+  try { gospelState.recognition && gospelState.recognition.stop(); } catch(e) {}
+  gospelState.isListening = false;
+  resetMicBtn();
+  setFeedback('neutral', 'Нажми микрофон и прочитай вслух');
+}
+
+function simulateReading() {
+  gospelState.simTimer = setTimeout(() => {
+    const good = Math.random() > 0.25;
+    if (good) {
+      const v = GOSPEL_VERSES[gospelState.activeIdx];
+      setFeedback('ok', '«' + v.text.slice(0, 45) + (v.text.length > 45 ? '…' : '') + '»');
+    } else {
+      setFeedback('err', 'Попробуй ещё раз — некоторые слова не разобраны');
+    }
+    gospelState.isListening = false;
+    resetMicBtn();
+    setTimeout(() => finishReading(good), 700);
+  }, 2200);
+}
+
+function evaluateReading() {
+  gospelState.isListening = false;
+  resetMicBtn();
+  const fb = document.getElementById('rp-feedback').textContent;
+  finishReading(fb.length > 8 && !fb.includes('Слушаю'));
+}
+
+function finishReading(success) {
+  const idx = gospelState.activeIdx;
+  const item = document.getElementById('verse-item-' + idx);
+  if (success) {
+    gospelState.done.add(idx);
+    item.classList.remove('active-reading','error-reading');
+    item.classList.add('done');
+    item.querySelector('.sentence-text').style.color = 'var(--lime)';
+    item.querySelector('.sentence-status').textContent = '✅';
+    item.onclick = null;
+    setFeedback('ok', '✅ Отлично! Предложение засчитано.');
+    state.coins += 15; state.xp += 8;
+    document.getElementById('coins-display').textContent = state.coins;
+    updateGospelStats();
+    setTimeout(() => {
+      closeReadingPanel();
+      const next = findNextVerse(idx);
+      if (next !== null) setTimeout(() => openVerse(next), 400);
+    }, 1100);
+  } else {
+    item.classList.remove('active-reading');
+    item.classList.add('error-reading');
+    setFeedback('err', '❌ Попробуй ещё раз — читай медленно и чётко');
+    setTimeout(() => { item.classList.remove('error-reading'); item.classList.add('active-reading'); }, 1600);
+  }
+}
+
+function findNextVerse(currentIdx) {
+  for (let i = currentIdx + 1; i < GOSPEL_VERSES.length; i++) {
+    if (!gospelState.done.has(i)) return i;
+  }
+  return null;
+}
+
+function skipSentence() {
+  closeReadingPanel();
+  const next = findNextVerse(gospelState.activeIdx);
+  if (next !== null) setTimeout(() => openVerse(next), 300);
+}
+
+function closeReadingPanel() {
+  clearTimeout(gospelState.simTimer);
+  try { gospelState.recognition && gospelState.recognition.stop(); } catch(e) {}
+  gospelState.isListening = false;
+  gospelState.activeIdx = null;
+  document.getElementById('reading-panel').classList.remove('show');
+  document.querySelectorAll('.sentence-item').forEach(el => el.classList.remove('active-reading','error-reading'));
+  resetMicBtn();
+}
+
+function closeGospel() { closeReadingPanel(); showScreen('home'); }
+
+function resetGospel() {
+  gospelState.done.clear();
+  gospelState.activeIdx = null;
+  showDoneStep();
+  document.getElementById('gospel-done-banner').classList.remove('show');
+  renderGospelSentences();
+  updateGospelStats();
+}
+
+// ── KEYWORD EXTRACTION ───────────────────────────────
+
+function extractKeyword(verses) {
+  // Priority words from spiritual/meaningful vocabulary
+  const priorityWords = [
+    'царство','небесный','отец','свет','душа','вера','бог','правда',
+    'жизнь','небо','птицы','лилии','соломон','заботьтесь','ищите',
+    'светильник','господам','маммона','одежда','пища','локоть',
+    'язычники','приложится','слава','траву','житницы',
+  ];
+  // Collect all words from all verses
+  const allText = verses.map(v => v.text).join(' ').toLowerCase();
+  const words = allText.match(/[а-яёa-z]{5,}/g) || [];
+
+  // Try to find a priority word
+  for (const pw of priorityWords) {
+    if (allText.includes(pw)) {
+      return pw.charAt(0).toUpperCase() + pw.slice(1);
+    }
+  }
+  // Fallback: pick the longest unique word
+  const unique = [...new Set(words)].sort((a,b) => b.length - a.length);
+  const word = unique[0] || 'Свет';
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+// ── BANNER STEPS ─────────────────────────────────────
+
+function showDoneStep() {
+  document.getElementById('g-step-done').style.display = 'block';
+  document.getElementById('g-step-call').style.display = 'none';
+  document.getElementById('g-step-reward').style.display = 'none';
+}
+
+function showCallStep() {
+  document.getElementById('g-step-done').style.display = 'none';
+  document.getElementById('g-step-call').style.display = 'block';
+  document.getElementById('g-step-reward').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+function showRewardStep() {
+  document.getElementById('g-step-done').style.display = 'none';
+  document.getElementById('g-step-call').style.display = 'none';
+  document.getElementById('g-step-reward').style.display = 'block';
+  window.scrollTo(0, 0);
+  // Bonus coins for completing
+  state.coins += 50;
+  state.xp += 20;
+  document.getElementById('coins-display').textContent = state.coins;
+}
+
+
+// ── MOM PHONE ────────────────────────────────────────
+
+function loadMomPhone() {
+  const saved = localStorage.getItem('momPhone');
+  if (saved) {
+    const hint = document.getElementById('mom-phone-hint');
+    if (hint) hint.textContent = '📞 Мама: ' + saved;
+  }
+}
+
+function showMomSettings() {
+  const saved = localStorage.getItem('momPhone') || '';
+  document.getElementById('mom-phone-input').value = saved;
+  document.getElementById('mom-modal').style.display = 'flex';
+}
+
+function closeMomModal() {
+  document.getElementById('mom-modal').style.display = 'none';
+}
+
+function saveMomPhone() {
+  const val = document.getElementById('mom-phone-input').value.trim();
+  if (!val) return;
+  localStorage.setItem('momPhone', val);
+  const hint = document.getElementById('mom-phone-hint');
+  if (hint) hint.textContent = '📞 Мама: ' + val;
+  closeMomModal();
+}
+
+function callMom() {
+  const phone = localStorage.getItem('momPhone');
+  if (!phone) {
+    showMomSettings();
+    return;
+  }
+  // Sanitize: keep only + and digits
+  const clean = phone.replace(/[^\d+]/g, '');
+  showCallStep();
+  // Small delay so the call screen shows before the dialer opens
+  setTimeout(() => { window.location.href = 'tel:' + clean; }, 400);
+}
+
+// Init
+loadMomPhone();
+refreshHome();
+</script>
+</body>
+</html>
